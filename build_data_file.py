@@ -69,13 +69,13 @@ def emissionactivity(df, outPutFile, startyear, endyear):
 
        year = startyear
        while year <= endyear:
-          CO2 = 0.069427604
+          CO2 = 0.000069427604
           #\t gives tab
           dataToInsert += "Kenya  KEDSGEN_%i\tCO2\t1\t%i\t%f\n" % (objectId, year, CO2)
           year += 1
        year2 = startyear
        while year2 <= endyear:
-          NOX = 5.687e-7
+          NOX = 5.687e-10
           dataToInsert += ("Kenya  KEDSGEN_%i\tNOX\t1\t%i\t%f\n" % (objectId, year2, NOX))
           year2 = year2 + 1
        year2 = startyear
@@ -206,13 +206,13 @@ def inputactivity(outPutFile, inputactivity, startyear, endyear):
 
     outPutFile = outPutFile[:startIndex] + dataToInsert + outPutFile[startIndex:]
     return (outPutFile)
-def totaltechnologyannualactivityupperlimit(outPutFile, demand, demand_urban, demand_rural):
+def SpecifiedDemandProfile(outPutFile, demand, demand_urban, demand_rural):
     #reset
     dataToInsert = ""
     #########################################################################
     #SpecifiedDemandProfile (region,fuel,timeslice,year,profile)
     ########################################################################
-    print("TotalTechnologyAnnualActivityUpperLimit", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    print("SpecifiedDemandProfile", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
     param = "param SpecifiedDemandProfile default 0 :=\n"
     startIndex = outPutFile.index(param) + len(param)
@@ -239,6 +239,17 @@ def totaltechnologyannualactivityupperlimit(outPutFile, demand, demand_urban, de
           cnt=1
 
     outPutFile = outPutFile[:startIndex] + dataToInsert + outPutFile[startIndex:]
+    return(outPutFile)
+
+def capacityfactor_wi(elec, outPutFile, df, capacityfactor_wind, capacityfactor_solar, solar_power, wind_power, timesliceDN, timesliceDE, timesliceED, timesliceEN, timesliceNE, timesliceND, batteryCF, battery13h, battery8h, startyear, endyear, months):
+    dataToInsert = ""
+    ###########################################################################
+     #Capacityfactor (region,technolgy,timeslice,year,CF)
+     ###########################################################################
+    print("Capacity factor wind", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    param = "param CapacityFactor default 1 :=\n"
+    startIndex = outPutFile.index(param) + len(param)
+    ######### WIND ###########
 
     for k, row in df.iterrows():
        ObjectId = row['OBJECTID *']
@@ -251,11 +262,13 @@ def totaltechnologyannualactivityupperlimit(outPutFile, demand, demand_urban, de
              startDate = "2016-%s-01" % (currentMonth)
              endDate = "2016-%s-01" % (months[m+1])
              thisMonthOnly = capacityfactor_wind.query('date > @startDate and date < @endDate')
-
+             #print(thisMonthOnly)
              sliceStart = timesliceDN
              sliceEnd = timesliceDE
+             #print(sliceStart)
+             #print(sliceEnd)
              ts = "%iD" % (m+1)
-             slice = sum(thisMonthOnly[(ObjectId)].between_time(sliceStart, sliceEnd))
+             slice = sum(thisMonthOnly[ObjectId].between_time(sliceStart, sliceEnd))
              average_wind = ((slice / len(thisMonthOnly.between_time(sliceStart, sliceEnd)._values))/wind_power)
              dataToInsert += "Kenya  WI_%i\t%s\t%i\t%f\n" % (ObjectId, ts, year, average_wind)
 
@@ -306,27 +319,22 @@ def totaltechnologyannualactivityupperlimit(outPutFile, demand, demand_urban, de
           year = year + 1
 
        cnt = 1
+    outPutFile = outPutFile[:startIndex] + dataToInsert + outPutFile[startIndex:]
+    return(outPutFile)
 
-
-    return (outPutFile)
-
-def capacityfactor(elec, outPutFile, df, capacityfactor_wind, capacityfactor_solar, solar_power, wind_power, timesliceDN, timesliceDE, timesliceED, timesliceEN, timesliceNE, timesliceND, batteryCF, battery13h, battery8h, startyear, endyear):
+def capacityfactor_PV(elec, outPutFile, df, capacityfactor_wind, capacityfactor_solar, solar_power, wind_power,
+                            timesliceDN, timesliceDE, timesliceED, timesliceEN, timesliceNE, timesliceND, batteryCF,
+                            battery13h, battery8h, startyear, endyear,months):
     dataToInsert = ""
-    ###########################################################################
-     #Capacityfactor (region,technolgy,timeslice,year,CF)
-     ###########################################################################
-    print("Capacity factor wind", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+
+    ######### Solar PV and MG ###############
+    print("Capacity factor solar", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     param = "param CapacityFactor default 1 :=\n"
     startIndex = outPutFile.index(param) + len(param)
-    ######### WIND ###########
-    months = ['01', '02', '03', '04','05','06','07','08','09','10','11','12']
-
-
-######### Solar PV and MG ###############
-    print("Capacity factor solar", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-    capacityfactor_solar['date'] = pd.to_datetime(capacityfactor_solar['date'], format='%d/%m/%Y %H:%M')
-    capacityfactor_solar.index = capacityfactor_solar['date']
-
+    capacityfactor_solar_pv = capacityfactor_solar.copy()
+    capacityfactor_solar_pv.index = capacityfactor_solar_pv[0]
+    #capacityfactor_solar = capacityfactor_solar.drop(columns=['0'])
+    #capacityfactor_solar.columns = pd.to_numeric(capacityfactor_solar.columns)
     for k, row in df.iterrows():
        ObjectId = row['OBJECTID *']
        year = startyear
@@ -336,8 +344,8 @@ def capacityfactor(elec, outPutFile, df, capacityfactor_wind, capacityfactor_sol
              currentMonth = months[m]
              startDate = "2016-%s-01" % (currentMonth)
              endDate = "2016-%s-01" % (months[m + 1])
-   # 
-             thisMonthOnly = capacityfactor_solar.query('date > @startDate and date < @endDate')
+             thisMonthOnly = capacityfactor_solar_pv.loc[startDate:endDate]
+             #thisMonthOnly = capacityfactor_solar.query('date > @startDate and date < @endDate')
              sliceStart = timesliceDN
              sliceEnd = timesliceDE
              ts = "%iD" % (m + 1)
@@ -380,7 +388,8 @@ def capacityfactor(elec, outPutFile, df, capacityfactor_wind, capacityfactor_sol
              currentMonth = months[m]
              startDate = "2016-%s-01" % (currentMonth)
              endDate = "2016-%s-31" % (months[m])
-             thisMonthOnly = capacityfactor_solar.query('date > @startDate and date < @endDate')
+             thisMonthOnly = capacityfactor_solar_pv.loc[startDate:endDate]
+             #thisMonthOnly = capacityfactor_solar.query('date > @startDate and date < @endDate')
              sliceStart = timesliceDN
              sliceEnd = timesliceDE
              ts = "%iD" % (m + 1)
@@ -424,8 +433,17 @@ def capacityfactor(elec, outPutFile, df, capacityfactor_wind, capacityfactor_sol
           year = year + 1
 
        cnt = 1
+    outPutFile = outPutFile[:startIndex] + dataToInsert + outPutFile[startIndex:]
+    return(outPutFile)
+
+def capacityfactor_solar_battery13h(elec, outPutFile, df, capacityfactor_wind, capacityfactor_solar, solar_power, wind_power,
+                             timesliceDN, timesliceDE, timesliceED, timesliceEN, timesliceNE, timesliceND, batteryCF,
+                             battery13h, battery8h, startyear, endyear, months):
+    dataToInsert = ""
     ######### Solar 13h battery ###############
     print("Capacity factor solar PV & MG 13h", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    param = "param CapacityFactor default 1 :=\n"
+    startIndex = outPutFile.index(param) + len(param)
 
     batteryCapacityFactor = batteryCF
     batteryTime = battery13h
@@ -452,16 +470,19 @@ def capacityfactor(elec, outPutFile, df, capacityfactor_wind, capacityfactor_sol
              batteryCapacityFactor = batteryCF
           elif solarCapacity == 0 and lastRowWasZero and not batteryConsumed:
              # This will happen when the last row was zero and the current row is 0.
-             capacityfactor_solar.set_value(index, ObjectId, batteryCapacityFactor)
+             capacityfactor_solar.at[index, ObjectId] = batteryCapacityFactor
              lastRowWasZero = True
              batteryTime -= 1
           elif not batteryConsumed:
              # This will happen when the last row was not zero and the current row is 0.
-             capacityfactor_solar.set_value(index, ObjectId, batteryCapacityFactor)
+             capacityfactor_solar.at[index, ObjectId] = batteryCapacityFactor
              lastRowWasZero = True
              batteryTime -= 1
           index += 1
-    capacityfactor_solar.index = capacityfactor_solar['date']
+    capacityfactor_solar_batt = capacityfactor_solar.copy()
+    capacityfactor_solar_batt.index = capacityfactor_solar_batt[0]
+    #capacityfactor_solar = capacityfactor_solar.drop(columns=['0'])
+    #capacityfactor_solar.columns = pd.to_numeric(capacityfactor_solar.columns)
     for k, row in df.iterrows():
        ObjectId = row['OBJECTID *']
        # print(ObjectId)
@@ -472,7 +493,8 @@ def capacityfactor(elec, outPutFile, df, capacityfactor_wind, capacityfactor_sol
              currentMonth = months[m]
              startDate = "2016-%s-01" % (currentMonth)
              endDate = "2016-%s-01" % (months[m + 1])
-             thisMonthOnly = capacityfactor_solar.query('date > @startDate and date < @endDate')
+             thisMonthOnly = capacityfactor_solar_batt.loc[startDate:endDate]
+             #thisMonthOnly = capacityfactor_solar.query('date > @startDate and date < @endDate')
              #print(thisMonthOnly)
 
              sliceStart = timesliceDN
@@ -514,7 +536,8 @@ def capacityfactor(elec, outPutFile, df, capacityfactor_wind, capacityfactor_sol
              # for j, row in timeslice.iterrows():
              startDate = "2016-%s-01" % (currentMonth)
              endDate = "2016-%s-31" % (months[m])
-             thisMonthOnly = capacityfactor_solar.query('date > @startDate and date < @endDate')
+             thisMonthOnly = capacityfactor_solar_batt.loc[startDate:endDate]
+             #thisMonthOnly = capacityfactor_solar.query('date > @startDate and date < @endDate')
 
              sliceStart = timesliceDN
              sliceEnd = timesliceDE
@@ -555,9 +578,17 @@ def capacityfactor(elec, outPutFile, df, capacityfactor_wind, capacityfactor_sol
           year = year + 1
 
        cnt = 1
-
+    outPutFile = outPutFile[:startIndex] + dataToInsert + outPutFile[startIndex:]
+    return (outPutFile)
+def capacityfactor_solar_battery8h(elec, outPutFile, df, capacityfactor_wind, capacityfactor_solar, solar_power, wind_power,
+                             timesliceDN, timesliceDE, timesliceED, timesliceEN, timesliceNE, timesliceND, batteryCF,
+                             battery13h, battery8h, startyear, endyear, months):
    ######### Solar 8h battery ###############
     print("Capacity factor solar PV 8h", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    param = "param CapacityFactor default 1 :=\n"
+    startIndex = outPutFile.index(param) + len(param)
+    dataToInsert = ""
+
     for k, row in df.iterrows():
        ObjectId = row['OBJECTID *']
 
@@ -583,16 +614,19 @@ def capacityfactor(elec, outPutFile, df, capacityfactor_wind, capacityfactor_sol
              batteryCapacityFactor = batteryCF
           elif solarCapacity == 0 and lastRowWasZero and not batteryConsumed:
              # This will happen when the last row was zero and the current row is 0.
-             capacityfactor_solar.set_value(index, ObjectId, batteryCapacityFactor)
+             capacityfactor_solar.at[index, ObjectId] = batteryCapacityFactor
              lastRowWasZero = True
              batteryTime -= 1
           elif not batteryConsumed:
              # This will happen when the last row was not zero and the current row is 0. Same as above???
-             capacityfactor_solar.set_value(index, ObjectId, batteryCapacityFactor)
+             capacityfactor_solar.at[index, ObjectId] = batteryCapacityFactor
              lastRowWasZero = True
              batteryTime -= 1
           index += 1
-    capacityfactor_solar.index = capacityfactor_solar['date']
+    capacityfactor_solar_batt_8 = capacityfactor_solar.copy()
+    capacityfactor_solar_batt_8.index = capacityfactor_solar_batt_8[0]
+    capacityfactor_solar_batt_8 = capacityfactor_solar_batt_8.drop(columns=[0])
+    #capacityfactor_solar.columns = pd.to_numeric(capacityfactor_solar.columns)
     for k, row in df.iterrows():
        ObjectId = row['OBJECTID *']
        # print(ObjectId)
@@ -603,8 +637,7 @@ def capacityfactor(elec, outPutFile, df, capacityfactor_wind, capacityfactor_sol
              currentMonth = months[m]
              startDate = "2016-%s-01" % (currentMonth)
              endDate = "2016-%s-01" % (months[m + 1])
-
-             thisMonthOnly = capacityfactor_solar.query('date > @startDate and date < @endDate')
+             thisMonthOnly = capacityfactor_solar_batt_8.loc[startDate:endDate]
 
              sliceStart = timesliceDN
              sliceEnd = timesliceDE
@@ -642,7 +675,8 @@ def capacityfactor(elec, outPutFile, df, capacityfactor_wind, capacityfactor_sol
              # for j, row in timeslice.iterrows():
              startDate = "2016-%s-01" % (currentMonth)
              endDate = "2016-%s-31" % (months[m])
-             thisMonthOnly = capacityfactor_solar.query('date > @startDate and date < @endDate')
+             thisMonthOnly = capacityfactor_solar_batt_8.loc[startDate:endDate]
+             #thisMonthOnly = capacityfactor_solar.query('date > @startDate and date < @endDate')
 
              sliceStart = timesliceDN
              sliceEnd = timesliceDE
@@ -710,16 +744,15 @@ def outputactivity(outPutFile, df):
 
 
     #reset
-    dataToInsert = ""
 
+def specifiedannualdemand(outPutFile, demand):
     #########################################################################
     #SpecifiedAnnualDemand (region,fuel,year,demand)
     ########################################################################
     print("Specified annual demand", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     param = "param SpecifiedAnnualDemand default 0 :=\n"
+    dataToInsert = ""
     startIndex = outPutFile.index(param) + len(param)
-
-    demand = pd.read_excel('Kenya_data_input_ALL.xlsx', 'demand', index_col=0, header=0)
 
     for j, row in demand.iterrows():
        year = startyear
@@ -730,16 +763,17 @@ def outputactivity(outPutFile, df):
     cnt = 1
 
     outPutFile = outPutFile[:startIndex] + dataToInsert + outPutFile[startIndex:]
-
+    return(outPutFile)
     #reset
-    dataToInsert = ""
 
+def fixedcost(df, outPutFile,startyear, endyear, elec):
     ##############################################################
     #Fixed cost (Region,Technology,Year,Fixedcost)
     ################################################################
     print("Fixed cost", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     param = "param FixedCost default 0 :=\n"
     startIndex = outPutFile.index(param) + len(param)
+    dataToInsert = ""
     #print(startIndex)
 
     for m, row in df.iterrows():
@@ -797,7 +831,7 @@ def outputactivity(outPutFile, df):
           year3 = year3 + 1
 
     outPutFile = outPutFile[:startIndex] + dataToInsert + outPutFile[startIndex:]
-
+    return (outPutFile)
 def capitalcost(df, outPutFile, elec, capitalcost_RET, trade_cost, wind_power, solar_power, capacityfactor_wind, capacityfactor_solar,startyear, endyear):
     dataToInsert = ""
 
