@@ -36,6 +36,7 @@ inputactivity = pd.read_csv(cd +'/data/inputactivity.csv', index_col=0)
 demand = pd.read_csv(cd +'/data/demand.csv', index_col=0, header=0)
 demand_urban = pd.read_csv(cd +'/data/demandprofile.csv', index_col=0, header=0)
 demand_rural = pd.read_csv(cd +'/data/demandprofile_rural.csv', index_col=0, header=0)
+<<<<<<< HEAD
 capacityfactor_wind = pd.read_csv(cd +'/data/capacityfactor_wind.csv',index_col=None)
 #capacityfactor_wind = pd.read_excel('capacityfactor_wind.xlsx', header=0)
 capacityfactor_wind['date'] = pd.to_datetime(capacityfactor_wind['date'],errors='coerce', format='%Y/%m/%d %H:%M')
@@ -46,11 +47,18 @@ capacityfactor_solar = pd.read_csv(cd +'/data/capacityfactor_solar.csv', index_c
 capacityfactor_solar['0'] = pd.to_datetime(capacityfactor_solar['0'], errors='coerce', format='%Y/%m/%d %H:%M')
 #capacityfactor_solar = capacityfactor_solar.drop(columns=['date'])
 capacityfactor_solar.columns = pd.to_numeric(capacityfactor_solar.columns)
+=======
+capacityfactor_wind = pd.read_csv(cd +'/data/capacityfactor_wind.csv')
+#capacityfactor_wind = pd.read_excel('capacityfactor_wind.xlsx', header=0)
+capacityfactor_wind['date'] = pd.to_datetime(capacityfactor_wind['date'], format='%d/%m/%Y %H:%M')
+capacityfactor_wind.index = capacityfactor_wind['date']
+print(capacityfactor_wind)
+capacityfactor_solar = pd.read_csv(cd +'/data/capacityfactor_solar.csv', header=0)
+>>>>>>> parent of 26e11f0... updated operationallife
 #capacityfactor_solar = pd.read_excel('capacityfactor_solar.xlsx', header=0)
 capitalcost_RET = pd.read_csv(cd +'/data/capitalcost_RET.csv', index_col=0, header=0)
 capitalcost_RET.index = capitalcost_RET['CF']
 trade_cost = pd.read_csv(cd +'/data/capitalcost.csv')
-operationallife = pd.read_csv(cd +'/data/operational_life.csv')
 
 wind_power = 600      #600 kW from renewable ninja
 solar_power = 1000  #1000W
@@ -79,6 +87,7 @@ outPutFile = allLinesFromKenyaXy
 
 ## functions to run
 #outPutFile = capitalcost(df, outPutFile, elec, capitalcost_RET, trade_cost, wind_power, solar_power, capacityfactor_wind, capacityfactor_solar, startyear, endyear)
+<<<<<<< HEAD
 outPutFile = capacityfactor_solar_battery8h(elec, outPutFile, df, capacityfactor_wind, capacityfactor_solar,
                                             solar_power, wind_power,
                                             timesliceDN, timesliceDE, timesliceED, timesliceEN, timesliceNE,
@@ -90,6 +99,10 @@ outPutFile = capacityfactor_PV(elec, outPutFile, df, capacityfactor_wind, capaci
 outPutFile = capacityfactor_wi(elec, outPutFile, df, capacityfactor_wind, capacityfactor_solar, solar_power, wind_power, timesliceDN, timesliceDE, timesliceED, timesliceEN, timesliceNE, timesliceND, batteryCF, battery13h, battery8h, startyear, endyear, months)
 
 #outPutFile = operational_life(df, operationallife, elec, outPutFile)
+=======
+#outPutFile = capacityfactor(elec, outPutFile, df, capacityfactor_wind, capacityfactor_solar, solar_power, wind_power, timesliceDN, timesliceDE, timesliceED, timesliceEN, timesliceNE, timesliceND, batteryCF, battery13h, battery8h, startyear, endyear)
+outPutFile = operational_life(df, elec, outPutFile)
+>>>>>>> parent of 26e11f0... updated operationallife
 #outPutFile = capacitytoactivity(trade,outPutFile)
 outPutFile = emissionactivity(df, outPutFile, startyear, endyear)
 outPutFile = variablecost(outPutFile, df, elec, startyear, endyear)

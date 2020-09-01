@@ -2,7 +2,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 
-def operational_life(df, life, elec, outPutFile):
+
+def operational_life(df, elec, outPutFile):
     dataToInsert = ""
     print("Operational life", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     param = "param OperationalLife default 1 :=\n"
@@ -41,6 +42,8 @@ def operational_life(df, life, elec, outPutFile):
 
         pv8hoperationallife = float(row['OperationalLifePV8h'])
         dataToInsert += "Kenya  SOPV8h_%i_0\t%i\n" % (objectId, pv8hoperationallife)
+
+    life = pd.read_excel('Kenya_data_input_ALL.xlsx', 'operational_life')
 
     for m, row in life.iterrows():
         t = row['Technology']
