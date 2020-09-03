@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/bin/bash 
 
 # Set the allocation to be charged for this job
-#SBATCH -A 2019-62
+#SBATCH -A 2020-51
 
 # The name of the script is myjob
 #SBATCH -J myjob
@@ -28,12 +28,12 @@ module add glpk/4.65-update
 export PATH=/cfs/klemming/nobackup/n/nandi/cplex/bin/x86-64_linux/:$PATH
 
 # filename is the name of DD file and lpName is the name of the output from glpsol
-lpName=Kenya_BIG_ALL_REF11_8.lp
+lpName=Kenya_BIG_ALL_REF_20200826.lp
 
-# this command starts glpsol (GNU Mathprog)
+# this command starts glpsol (GNU Mathprog) 
 # Only generate the .lp file using flag --check
 
-glpsol -m OSeMOSYS_fast.txt -d Kenya_BIG_ALL_REF11.txt --wlp Kenya_BIG_ALL_REF11.lp --check
+glpsol -m OSeMOSYS_fast.txt -d Kenya_BIG_ALL_REF_200826_revE.txt --wlp Kenya_BIG_ALL_REF_20200826.lp --check
 
 # break mean make a new empty file for mycplexcommands
 rm -f mycplexcommands
@@ -41,14 +41,14 @@ touch mycplexcommands
 
 # echo writes each line to mycplexcommands that I want to execute in CPLEX
 
-echo "read Kenya_BIG_ALL_REF11.lp" >> mycplexcommands
-echo "set simplex tolerances optimality 1e-04" >>mycplexcommands
+echo "read Kenya_BIG_ALL_REF_20200826.lp" >> mycplexcommands
+echo "set simplex tolerances optimality 1e-05" >>mycplexcommands
 echo "set simplex dgradient 5" >>mycplexcommands
 echo "set output clonelog 1" >>mycplexcommands
 echo "set threads 24"       >> mycplexcommands
 echo "optimize"             >> mycplexcommands
 echo "write"                >> mycplexcommands
-echo "Kenya_BIG_ALL_REF11.sol"    >> mycplexcommands
+echo "Kenya_BIG_ALL_REF_200826.sol"    >> mycplexcommands
 echo "quit"                 >> mycplexcommands
 
 
@@ -56,8 +56,17 @@ echo "quit"                 >> mycplexcommands
 # Should set the path to CPLEX
 cplex < mycplexcommands
 
+# break mean make a new empty file for mycplexcommands
+#rm -f mycplexcommandsvision
+#touch mycplexcommandsvision
+
+# echo writes each line to mycplexcommands that I want to execute in CPLEX
+
 # the sol file is input to transform python script
 #
-python transform_updated.py Kenya_BIG_ALL_REF11.sol Kenya_BIG_ALL_solved_REF11.txt
+python transform_updated.py Kenya_BIG_ALL_REF_200826.sol Kenya_BIG_ALL_REF_200826_solved.txt
 
+# delete lp and sol files
+#rm -f Kenya_BIG_ALL.lp
+#rm -f Kenya_BIG_ALL.sol
 
