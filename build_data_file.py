@@ -186,7 +186,7 @@ def totaltechnologyannualactivityupperlimit(df,outPutFile, startyear, endyear):
     outPutFile = outPutFile[:startIndex] + dataToInsert + outPutFile[startIndex:]
     return(outPutFile)
 
-def inputactivity(outPutFile, inputactivity, startyear, endyear):
+def inputact(outPutFile, inputactivity, startyear, endyear):
     #reset
     dataToInsert = ""
     ###########################################################################

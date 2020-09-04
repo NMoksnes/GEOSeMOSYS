@@ -7,29 +7,11 @@ from build_data_file import *
 ##############################
 ##       Input data      ##
 #############################
-## Excelfiles import##
-#datafile = 'Kenya_data_input_ALL.xlsx'
-#df = pd.read_csv(datafile, 'GIS_data')
-#elec = pd.read_excel(datafile, 'elec')
-#trade = pd.read_excel(datafile, 'capacitytoactivity')
-#inputactivity = pd.read_excel(datafile, 'inputactivity', index_col=0)
-#demand = pd.read_excel(datafile, 'demand', index_col=0, header=0)
-#demand_urban = pd.read_excel(datafile, 'demandprofile', index_col=0, header=0)
-#demand_rural = pd.read_excel(datafile, 'demandprofile_rural', index_col=0, header=0)
-#capacityfactor_wind = pd.read_excel(datafile, 'capacityfactor_wind', header=0)
-#capacityfactor_wind = pd.read_excel('capacityfactor_wind.xlsx', header=0)
-#capacityfactor_wind['date'] = pd.to_datetime(capacityfactor_wind['date'], format='%d/%m/%Y %H:%M')
-#capacityfactor_wind.index = capacityfactor_wind['date']
-#capacityfactor_solar = pd.read_excel(datafile, 'capacityfactor_solar', header=0)
-#capacityfactor_solar = pd.read_excel('capacityfactor_solar.xlsx', header=0)
-#capitalcost_RET = pd.read_excel(datafile, 'capitalcost_RET', index_col=0, header=0)
-#capitalcost_RET.index = capitalcost_RET['CF']
 
-### Making csv files instead to make the read more efficient
 cd = os.getcwd()
 df = pd.read_csv(cd +'/data/GIS_data.csv')
-inputFileName = "Kenya_BIG_ALL_REF_200826_revD.txt"
-file_object = 'Kenya_BIG_ALL_REF_200826_revE.txt'
+inputFileName = "Kenya_BIG_ALL_REF_200826_revE.txt"
+file_object = 'Kenya_BIG_ALL_REF_200826_revF.txt'
 elec = pd.read_csv(cd +'/data/elec.csv')
 trade = pd.read_csv(cd +'/data/capacitytoactivity.csv')
 inputactivity = pd.read_csv(cd +'/data/inputactivity.csv', index_col=0)
@@ -48,9 +30,9 @@ capacityfactor_solar['0'] = pd.to_datetime(capacityfactor_solar['0'], errors='co
 capacityfactor_solar.columns = pd.to_numeric(capacityfactor_solar.columns)
 capacityfactor_wind = pd.read_csv(cd +'/data/capacityfactor_wind.csv')
 #capacityfactor_wind = pd.read_excel('capacityfactor_wind.xlsx', header=0)
-capacityfactor_wind['date'] = pd.to_datetime(capacityfactor_wind['date'], format='%d/%m/%Y %H:%M')
-capacityfactor_wind.index = capacityfactor_wind['date']
-print(capacityfactor_wind)
+#capacityfactor_wind['date'] = pd.to_datetime(capacityfactor_wind['date'], format='%d/%m/%Y %H:%M')
+#capacityfactor_wind.index = capacityfactor_wind['date']
+#print(capacityfactor_wind)
 capacityfactor_solar = pd.read_csv(cd +'/data/capacityfactor_solar.csv', header=0)
 #capacityfactor_solar = pd.read_excel('capacityfactor_solar.xlsx', header=0)
 capitalcost_RET = pd.read_csv(cd +'/data/capitalcost_RET.csv', index_col=0, header=0)
@@ -84,25 +66,25 @@ outPutFile = allLinesFromKenyaXy
 
 ## functions to run
 #outPutFile = capitalcost(df, outPutFile, elec, capitalcost_RET, trade_cost, wind_power, solar_power, capacityfactor_wind, capacityfactor_solar, startyear, endyear)
-outPutFile = capacityfactor_solar_battery8h(elec, outPutFile, df, capacityfactor_wind, capacityfactor_solar,
-                                            solar_power, wind_power,
-                                            timesliceDN, timesliceDE, timesliceED, timesliceEN, timesliceNE,
-                                            timesliceND, batteryCF,
-                                            battery13h, battery8h, startyear, endyear, months)
-outPutFile = capacityfactor_solar_battery13h(elec, outPutFile, df, capacityfactor_wind, capacityfactor_solar, solar_power, wind_power, timesliceDN, timesliceDE, timesliceED, timesliceEN, timesliceNE, timesliceND, batteryCF, battery13h, battery8h, startyear, endyear, months)
-outPutFile = capacityfactor_PV(elec, outPutFile, df, capacityfactor_wind, capacityfactor_solar, solar_power, wind_power, timesliceDN, timesliceDE, timesliceED, timesliceEN, timesliceNE, timesliceND, batteryCF, battery13h, battery8h, startyear, endyear, months)
+#outPutFile = capacityfactor_solar_battery8h(elec, outPutFile, df, capacityfactor_wind, capacityfactor_solar,
+#                                            solar_power, wind_power,
+#                                            timesliceDN, timesliceDE, timesliceED, timesliceEN, timesliceNE,
+#                                            timesliceND, batteryCF,
+#                                            battery13h, battery8h, startyear, endyear, months)
+#outPutFile = capacityfactor_solar_battery13h(elec, outPutFile, df, capacityfactor_wind, capacityfactor_solar, solar_power, wind_power, timesliceDN, timesliceDE, timesliceED, timesliceEN, timesliceNE, timesliceND, batteryCF, battery13h, battery8h, startyear, endyear, months)
+#outPutFile = capacityfactor_PV(elec, outPutFile, df, capacityfactor_wind, capacityfactor_solar, solar_power, wind_power, timesliceDN, timesliceDE, timesliceED, timesliceEN, timesliceNE, timesliceND, batteryCF, battery13h, battery8h, startyear, endyear, months)
 
-outPutFile = capacityfactor_wi(elec, outPutFile, df, capacityfactor_wind, capacityfactor_solar, solar_power, wind_power, timesliceDN, timesliceDE, timesliceED, timesliceEN, timesliceNE, timesliceND, batteryCF, battery13h, battery8h, startyear, endyear, months)
+#outPutFile = capacityfactor_wi(elec, outPutFile, df, capacityfactor_wind, capacityfactor_solar, solar_power, wind_power, timesliceDN, timesliceDE, timesliceED, timesliceEN, timesliceNE, timesliceND, batteryCF, battery13h, battery8h, startyear, endyear, months)
 
 #outPutFile = operational_life(df, operationallife, elec, outPutFile)
 #outPutFile = capacityfactor(elec, outPutFile, df, capacityfactor_wind, capacityfactor_solar, solar_power, wind_power, timesliceDN, timesliceDE, timesliceED, timesliceEN, timesliceNE, timesliceND, batteryCF, battery13h, battery8h, startyear, endyear)
-outPutFile = operational_life(df, elec, outPutFile)
+#outPutFile = operational_life(df, elec, outPutFile)
 #outPutFile = capacitytoactivity(trade,outPutFile)
-outPutFile = emissionactivity(df, outPutFile, startyear, endyear)
-outPutFile = variablecost(outPutFile, df, elec, startyear, endyear)
+#outPutFile = emissionactivity(df, outPutFile, startyear, endyear)
+#outPutFile = variablecost(outPutFile, df, elec, startyear, endyear)
 #outPutFile = totaltechnologyannualactivityupperlimit(df, outPutFile, startyear, endyear)
 #outPutFile = SpecifiedDemandProfile(outPutFile, demand, demand_urban, demand_rural)
-#outPutFile = inputactivity(outPutFile, inputactivity, startyear, endyear)
+outPutFile = inputact(outPutFile, inputactivity, startyear, endyear)
 #outPutFile = fixedcost(df, outPutFile, startyear, endyear, elec)
 #outPutFile = specifiedannualdemand(outPutFile, demand)
 
