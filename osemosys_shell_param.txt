@@ -1,0 +1,181 @@
+###############
+#    Sets     #
+###############
+#
+set REGION :=  ;
+set YEAR :=  ;
+set DAYTYPE :=  ;
+set DAILYTIMEBRACKET := ;
+set STORAGE :=  ;
+set EMISSION := ;
+set SEASON := ;
+set FUEL := ;
+set TIMESLICE := ;
+set MODE_OF_OPERATION := ;
+set TECHNOLOGY := ;
+
+
+#####################
+#    Parameters     #
+#####################
+#
+
+param TotalTechnologyAnnualActivityUpperLimit default 99999999999 :=
+;
+
+param RETagTechnology default 0 :=
+;
+
+param DaysInDayType default 7 :=
+;
+
+param EmissionsPenalty default 0 :=
+;
+
+param ModelPeriodExogenousEmission default 0 :=
+;
+
+param StorageMaxDischargeRate default 0 :=
+;
+
+param VariableCost default 0 :=
+;
+
+param Conversionlh default 0 :=
+;
+
+param ReserveMarginTagFuel default 0 :=
+;
+
+param DepreciationMethod default 1 :=
+;
+
+param TotalAnnualMaxCapacityInvestment default 99999999 :=
+;
+
+param TechnologyToStorage default 0 :=
+;
+
+param TotalTechnologyAnnualActivityLowerLimit default 0 :=
+;
+
+param DaySplit default 0 :=
+;
+
+param SpecifiedDemandProfile default 0 :=
+;
+
+param OutputActivityRatio default 0 :=
+;
+
+param DiscountRate default 0.09 :=
+;
+
+param FixedCost default 0 :=
+;
+
+param TotalAnnualMinCapacityInvestment default 0 :=
+;
+
+param Conversionls default 0 :=
+;
+
+param CapitalCostStorage default 0 :=
+;
+
+param StorageLevelStart default 0 :=
+;
+
+param TotalTechnologyModelPeriodActivityLowerLimit default 0 :=
+;
+
+param MinStorageCharge default 0 :=
+;
+
+param CapacityFactor default 1 :=
+;
+
+param OperationalLifeStorage default 99 :=
+;
+
+param Conversionld default 0 :=
+;
+
+param OperationalLife default 1 :=
+
+;
+
+param TotalAnnualMaxCapacity default 9999999999999 :=
+;
+
+param CapacityToActivityUnit default 1 :=
+
+;
+
+param AnnualExogenousEmission default 0 :=
+;
+
+param ResidualStorageCapacity default 0 :=
+;
+
+param TotalAnnualMinCapacity default 0 :=
+;
+
+param REMinProductionTarget default 0 :=
+;
+
+param CapitalCost default 0 :=
+;
+
+param StorageMaxChargeRate default 99 :=
+;
+
+param TechnologyFromStorage default 0 :=
+;
+
+param AvailabilityFactor default 1 :=
+;
+
+param InputActivityRatio default 0 :=
+;
+
+param ModelPeriodEmissionLimit default 99999999 :=
+;
+
+param AccumulatedAnnualDemand default 0 :=
+;
+
+param EmissionActivityRatio default 0 :=
+;
+
+param ReserveMargin default 1 :=
+;
+
+param AnnualEmissionLimit default 9999999999 :=
+;
+
+param TradeRoute default 0 :=
+;
+
+param SpecifiedAnnualDemand default 0 :=
+;
+
+param RETagFuel default 0 :=
+;
+
+param CapacityOfOneTechnologyUnit default 0 :=
+;
+
+param TotalTechnologyModelPeriodActivityUpperLimit default 9999999999999 :=
+;
+
+param ResidualCapacity default 0 :=
+;
+
+param YearSplit default 0 :
+;
+
+param ReserveMarginTagTechnology default 0 :=
+;
+
+end;
