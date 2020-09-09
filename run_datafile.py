@@ -10,18 +10,15 @@ from build_data_file import *
 
 cd = os.getcwd()
 df = pd.read_csv(cd +'/data/GIS_data.csv')
-inputFileName = "Kenya_BIG_ALL_REF_200826_revE.txt"
-file_object = 'Kenya_BIG_ALL_REF_200826_revF.txt'
+inputFileName = cd +'/base_file/Kenya_BIG_ALL_REF_200826_revF.txt'
+file_object = cd +'/base_file/Kenya_BIG_ALL_REF_200826_revG.txt'
 elec = pd.read_csv(cd +'/data/elec.csv')
 trade = pd.read_csv(cd +'/data/capacitytoactivity.csv')
 inputactivity = pd.read_csv(cd +'/data/inputactivity.csv', index_col=0)
 demand = pd.read_csv(cd +'/data/demand.csv', index_col=0, header=0)
 demand_urban = pd.read_csv(cd +'/data/demandprofile.csv', index_col=0, header=0)
 demand_rural = pd.read_csv(cd +'/data/demandprofile_rural.csv', index_col=0, header=0)
-<<<<<<< HEAD
-<<<<<<< HEAD
 capacityfactor_wind = pd.read_csv(cd +'/data/capacityfactor_wind.csv',index_col=None)
-#capacityfactor_wind = pd.read_excel('capacityfactor_wind.xlsx', header=0)
 capacityfactor_wind['date'] = pd.to_datetime(capacityfactor_wind['date'],errors='coerce', format='%Y/%m/%d %H:%M')
 capacityfactor_wind.index = capacityfactor_wind['date']
 capacityfactor_wind = capacityfactor_wind.drop(columns=['date'])
@@ -30,24 +27,7 @@ capacityfactor_solar = pd.read_csv(cd +'/data/capacityfactor_solar.csv', index_c
 capacityfactor_solar['0'] = pd.to_datetime(capacityfactor_solar['0'], errors='coerce', format='%Y/%m/%d %H:%M')
 #capacityfactor_solar = capacityfactor_solar.drop(columns=['date'])
 capacityfactor_solar.columns = pd.to_numeric(capacityfactor_solar.columns)
-capacityfactor_wind = pd.read_csv(cd +'/data/capacityfactor_wind.csv')
-#capacityfactor_wind = pd.read_excel('capacityfactor_wind.xlsx', header=0)
-#capacityfactor_wind['date'] = pd.to_datetime(capacityfactor_wind['date'], format='%d/%m/%Y %H:%M')
-#capacityfactor_wind.index = capacityfactor_wind['date']
-#print(capacityfactor_wind)
-=======
-capacityfactor_wind = pd.read_csv(cd +'/data/capacityfactor_wind.csv')
-#capacityfactor_wind = pd.read_excel('capacityfactor_wind.xlsx', header=0)
-=======
-capacityfactor_wind = pd.read_csv(cd +'/data/capacityfactor_wind.csv')
-#capacityfactor_wind = pd.read_excel('capacityfactor_wind.xlsx', header=0)
->>>>>>> parent of 26e11f0... updated operationallife
-capacityfactor_wind['date'] = pd.to_datetime(capacityfactor_wind['date'], format='%d/%m/%Y %H:%M')
-capacityfactor_wind.index = capacityfactor_wind['date']
-print(capacityfactor_wind)
->>>>>>> parent of 26e11f0... updated operationallife
 capacityfactor_solar = pd.read_csv(cd +'/data/capacityfactor_solar.csv', header=0)
-#capacityfactor_solar = pd.read_excel('capacityfactor_solar.xlsx', header=0)
 capitalcost_RET = pd.read_csv(cd +'/data/capitalcost_RET.csv', index_col=0, header=0)
 capitalcost_RET.index = capitalcost_RET['CF']
 trade_cost = pd.read_csv(cd +'/data/capitalcost.csv')
@@ -89,17 +69,8 @@ outPutFile = allLinesFromKenyaXy
 
 #outPutFile = capacityfactor_wi(elec, outPutFile, df, capacityfactor_wind, capacityfactor_solar, solar_power, wind_power, timesliceDN, timesliceDE, timesliceED, timesliceEN, timesliceNE, timesliceND, batteryCF, battery13h, battery8h, startyear, endyear, months)
 
-#outPutFile = operational_life(df, operationallife, elec, outPutFile)
 #outPutFile = capacityfactor(elec, outPutFile, df, capacityfactor_wind, capacityfactor_solar, solar_power, wind_power, timesliceDN, timesliceDE, timesliceED, timesliceEN, timesliceNE, timesliceND, batteryCF, battery13h, battery8h, startyear, endyear)
-<<<<<<< HEAD
-<<<<<<< HEAD
 #outPutFile = operational_life(df, elec, outPutFile)
-=======
-outPutFile = operational_life(df, elec, outPutFile)
->>>>>>> parent of 26e11f0... updated operationallife
-=======
-outPutFile = operational_life(df, elec, outPutFile)
->>>>>>> parent of 26e11f0... updated operationallife
 #outPutFile = capacitytoactivity(trade,outPutFile)
 #outPutFile = emissionactivity(df, outPutFile, startyear, endyear)
 #outPutFile = variablecost(outPutFile, df, elec, startyear, endyear)
