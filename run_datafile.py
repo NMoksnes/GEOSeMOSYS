@@ -1,18 +1,105 @@
+"""
+This script is to build a OSeMOSYS data file where you have many locations/countries.
+The script is user defined in the geographical, technology, year, timeslice dimesions, which makes the script very flexible.
+"""
+
+__author__ = "Nandi Moksnes, Sebastian Moksnes"
+__copyright__ = "Nandi Moksnes, nandi@kth.se"
+__licence__ = "mit"
+
 import pandas as pd
 import numpy as np
 import os
+import argparse
+import sys
+import logging
 from datetime import datetime
 from build_data_file import *
 
-##############################
-##       Input data      ##
-#############################
+#CMD line read from https://github.com/willu47/lcoe/blob/master/src/lcoe/lcoe.py author Will Usher
+
+# _logger = logging.getLogger(__name__)
+#
+# def parse_args(args):
+#     """Parse command line parameters
+#     Args:
+#       args ([str]): command line parameters as list of strings
+#     Returns:
+#       :obj:`argparse.Namespace`: command line parameters namespace
+#     """
+#     parser = argparse.ArgumentParser(
+#         description="Location specific OSeMOSYS datafile generator")
+#     parser.add_argument(
+#         "--version",
+#         action="version",
+#         version="lcoe {ver}".format(ver=__version__))
+#     parser.add_argument(
+#         dest="capital_cost",
+#         help="Capital cost of the plant in $/kWh",
+#         type=float,
+#         metavar="FLOAT")
+#     parser.add_argument(
+#         dest="annual_output",
+#         help="Annual output of the plant in kWh",
+#         type=float,
+#         metavar="FLOAT")
+#     parser.add_argument(
+#         dest="annual_operating_cost",
+#         help="Annual operating cost of the plant in $",
+#         type=float,
+#         metavar="FLOAT")
+#     parser.add_argument(
+#         dest="discount_rate",
+#         help="Discount rate x where 0 <= x < 1",
+#         type=float,
+#         metavar="FLOAT")
+#     parser.add_argument(
+#         dest="lifetime",
+#         help="Lifetime of the plant in years",
+#         type=int,
+#         metavar="INT")
+#
+#     return parser.parse_args(args)
+#
+# def main(args):
+#     """Main entry point allowing external calls
+#     Args:
+#       args ([str]): command line parameter list
+#     """
+#     args = parse_args(args)
+#     _logger.debug("Starting location specific calculations...")
+#     print("LCOE is {}".format(
+#         lcoe(args.annual_output,
+#              args.capital_cost,
+#              args.annual_operating_cost,
+#              args.discount_rate,
+#              args.lifetime)
+#         ))
+#     _logger.info("Script ends here")
+#
+#
+# def run():
+#     """Entry point for console_scripts
+#     """
+#     main(sys.argv[1:])
+#
+#
+# if __name__ == "__main__":
+#     run()
+#
+
+# def main(filepath, configuration_file):
+#    """Generate spatially disaggregated values"""
+#    # Read input data
+#    with open(os.path.join(filepath, "data.csv", 'r') as datafile:
+#       data = datafile.readlines()
 
 cd = os.getcwd()
 df = pd.read_csv(cd +'/data/GIS_data.csv')
-inputFileName = cd +'/base_file/Kenya_BIG_ALL_REF_200826_revF.txt'
-file_object = cd +'/base_file/Kenya_BIG_ALL_REF_200826_revG.txt'
-elec = pd.read_csv(cd +'/data/elec.csv')
+inputFileName = cd +'/osemosys_shell_param.txt'
+file_object = cd +'/GIS.txt'
+life = pd.read_csv(cd +'/data/operational_life.csv')
+
 trade = pd.read_csv(cd +'/data/capacitytoactivity.csv')
 inputactivity = pd.read_csv(cd +'/data/inputactivity.csv', index_col=0)
 demand = pd.read_csv(cd +'/data/demand.csv', index_col=0, header=0)
@@ -32,6 +119,10 @@ capitalcost_RET = pd.read_csv(cd +'/data/capitalcost_RET.csv', index_col=0, head
 capitalcost_RET.index = capitalcost_RET['CF']
 trade_cost = pd.read_csv(cd +'/data/capitalcost.csv')
 
+emissions = pd.read_csv(cd +'/data/emissions.csv', header=0)
+variable_cost = pd.read_csv(cd +'/data/variable_cost.csv', header=0)
+fixed_cost = pd.read_csv(cd +'/data/fixed_cost.csv', header=0)
+
 wind_power = 600      #600 kW from renewable ninja
 solar_power = 1000  #1000W
 batteryCF = 900  #900W
@@ -47,6 +138,8 @@ timesliceND = '05:00'
 months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']
 startyear = 2012
 endyear = 2040
+modeofoperation = [1,2,3]
+region = "Kenya"
 
 ###############################
 ##    Reset all values      ##
@@ -58,27 +151,30 @@ with open(inputFileName, "r") as inputFile:
 outPutFile = allLinesFromKenyaXy
 
 ## functions to run
-#outPutFile = capitalcost(df, outPutFile, elec, capitalcost_RET, trade_cost, wind_power, solar_power, capacityfactor_wind, capacityfactor_solar, startyear, endyear)
-#outPutFile = capacityfactor_solar_battery8h(elec, outPutFile, df, capacityfactor_wind, capacityfactor_solar,
-#                                            solar_power, wind_power,
-#                                            timesliceDN, timesliceDE, timesliceED, timesliceEN, timesliceNE,
-#                                            timesliceND, batteryCF,
-#                                            battery13h, battery8h, startyear, endyear, months)
-#outPutFile = capacityfactor_solar_battery13h(elec, outPutFile, df, capacityfactor_wind, capacityfactor_solar, solar_power, wind_power, timesliceDN, timesliceDE, timesliceED, timesliceEN, timesliceNE, timesliceND, batteryCF, battery13h, battery8h, startyear, endyear, months)
-#outPutFile = capacityfactor_PV(elec, outPutFile, df, capacityfactor_wind, capacityfactor_solar, solar_power, wind_power, timesliceDN, timesliceDE, timesliceED, timesliceEN, timesliceNE, timesliceND, batteryCF, battery13h, battery8h, startyear, endyear, months)
+outPutFile = operational_life(df, outPutFile, region, life)
+outPutFile = emissionactivity(df, outPutFile, startyear, endyear, region, emissions, modeofoperation)
+outPutFile = variblecost(df, outPutFile, startyear, endyear, region, variable_cost, modeofoperation)
+outPutFile = fixedcost(df, outPutFile, startyear, endyear, region, fixed_cost)
 
-#outPutFile = capacityfactor_wi(elec, outPutFile, df, capacityfactor_wind, capacityfactor_solar, solar_power, wind_power, timesliceDN, timesliceDE, timesliceED, timesliceEN, timesliceNE, timesliceND, batteryCF, battery13h, battery8h, startyear, endyear, months)
 
-#outPutFile = capacityfactor(elec, outPutFile, df, capacityfactor_wind, capacityfactor_solar, solar_power, wind_power, timesliceDN, timesliceDE, timesliceED, timesliceEN, timesliceNE, timesliceND, batteryCF, battery13h, battery8h, startyear, endyear)
-#outPutFile = operational_life(df, elec, outPutFile)
-#outPutFile = capacitytoactivity(trade,outPutFile)
-#outPutFile = emissionactivity(df, outPutFile, startyear, endyear)
-#outPutFile = variablecost(outPutFile, df, elec, startyear, endyear)
-#outPutFile = totaltechnologyannualactivityupperlimit(df, outPutFile, startyear, endyear)
-#outPutFile = SpecifiedDemandProfile(outPutFile, demand, demand_urban, demand_rural)
-outPutFile = inputact(outPutFile, inputactivity, startyear, endyear)
-#outPutFile = fixedcost(df, outPutFile, startyear, endyear, elec)
-#outPutFile = specifiedannualdemand(outPutFile, demand)
+
+outPutFile = capitalcost_dynamic(df, outPutFile, elec, capitalcost_RET, trade_cost, wind_power, solar_power, capacityfactor_wind, capacityfactor_solar, startyear, endyear, region, modeofoperation)
+
+outPutFile = capitalcost(df, outPutFile, trade_cost, startyear, endyear,region, modeofoperation)
+outPutFile = capacityfactor_solar_battery8h(elec, outPutFile, df, capacityfactor_wind, capacityfactor_solar,
+                                            solar_power, wind_power,
+                                            timesliceDN, timesliceDE, timesliceED, timesliceEN, timesliceNE,
+                                            timesliceND, batteryCF,
+                                            battery13h, battery8h, startyear, endyear, months,region, modeofoperation)
+outPutFile = capacityfactor_solar_battery13h(elec, outPutFile, df, capacityfactor_wind, capacityfactor_solar, solar_power, wind_power, timesliceDN, timesliceDE, timesliceED, timesliceEN, timesliceNE, timesliceND, batteryCF, battery13h, battery8h, startyear, endyear, months,region, modeofoperation)
+outPutFile = capacityfactor_PV(elec, outPutFile, df, capacityfactor_wind, capacityfactor_solar, solar_power, wind_power, timesliceDN, timesliceDE, timesliceED, timesliceEN, timesliceNE, timesliceND, batteryCF, battery13h, battery8h, startyear, endyear, months,region, modeofoperation)
+outPutFile = capacityfactor_wi(elec, outPutFile, df, capacityfactor_wind, capacityfactor_solar, solar_power, wind_power, timesliceDN, timesliceDE, timesliceED, timesliceEN, timesliceNE, timesliceND, batteryCF, battery13h, battery8h, startyear, endyear, months,region, modeofoperation)
+outPutFile = capacityfactor(elec, outPutFile, df, capacityfactor_wind, capacityfactor_solar, solar_power, wind_power, timesliceDN, timesliceDE, timesliceED, timesliceEN, timesliceNE, timesliceND, batteryCF, battery13h, battery8h, startyear, endyear,region, modeofoperation)
+outPutFile = capacitytoactivity(trade,outPutFile,region, modeofoperation)
+outPutFile = totaltechnologyannualactivityupperlimit(df, outPutFile, startyear, endyear,region, modeofoperation)
+outPutFile = SpecifiedDemandProfile(outPutFile, demand, demand_urban, demand_rural,startyear, endyear,region, modeofoperation)
+outPutFile = inputact(outPutFile, inputactivity, startyear, endyearregion, modeofoperation)
+outPutFile = specifiedannualdemand(outPutFile, demandregion, modeofoperation)
 
 #write data file
 write_to_file(file_object, outPutFile)
