@@ -1,162 +1,286 @@
 import pandas as pd
 import numpy as np
+import os
+from os import listdir
+from os.path import isfile, join
 from datetime import datetime
 
-def operational_life(df, outPutFile, region, life):
-    ############################################################
-    ### OperationalLife (Region, Technology,operationallife)
-    #############################################################
+paths = (os.getcwd() + '\data')
+path = os.getcwd()
+file_object= os.getcwd() + '/GIS.txt'
 
-    dataToInsert = ""
-    print("Operational life", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-    param = "param OperationalLife default 1 :=\n"
-    startIndex = outPutFile.index(param) + len(param)
+def load_csvs(paths):
+    basdir = os.getcwd()
+    os.chdir(paths)
+    print(os.getcwd())
+    onlyfiles = [f for f in listdir(paths) if isfile(join(paths, f))]
+    dfs = {}  #.csv files
+    param=[]  #list of parameters
+    dict_df = {}
+    for files in onlyfiles:
+        print(files)
+    #validate that the files are csv. Else the read function will not work
+        if files.split('.')[1] == 'csv':
+            dfs[files] = pd.read_csv(files)
+            param.append(files.split('.')[0])
+        else:
+            "You have mixed file types in you directory, please make sure all are .csv type!"
+    for i, value in enumerate(param):
+        dict_df[param[i]] = dfs[param[i]+'.csv']
+    os.chdir(basdir)
+    return dict_df
 
-    for i, row in df.iterrows():
-        location = row['Location']
-        for m, line in life.iterrows():
-            t = line['Technology']
-            l = line['Life']
-
-            dataToInsert += "%s  %s_%i\t%i\n" % (region,t, location, l)
-
-        cnt = 1
-    cnt = 1
-    outPutFile = outPutFile[:startIndex] + dataToInsert + outPutFile[startIndex:]
+def make_outputfile(path):
+    inputFileName = path + '/osemosys_shell_param.txt'
+    allLinesFromXy = ""
+    with open(inputFileName, "r") as inputFile:
+        allLinesFromXy = inputFile.read()
+    outPutFile = allLinesFromXy
     return(outPutFile)
 
+def functions_to_run(dict_df, outPutFile, startyear, endyear, region, modeofoperation):
+    outPutFile = operational_life(outPutFile, dict_df['GIS_data'], region, dict_df['operational_life'])
+    outPutFile = fixedcost(dict_df['GIS_data'], outPutFile, startyear, endyear, region, dict_df['fixed_cost'])
+    outPutFile = totaltechnologyannualactivityupperlimit(dict_df['GIS_data'], outPutFile, startyear, endyear, region,
+                                                         dict_df['total_annual_technology_limit'])
+    outPutFile = specifiedannualdemand(outPutFile, dict_df['demand'], region, startyear, endyear)
+
+    outPutFile = capitalcost_dynamic(dict_df['GIS_data'], outPutFile, dict_df['capitalcost_RET'],
+                                     dict_df['capacityfactor_wind'], dict_df['capacityfactor_solar'], startyear,
+                                     endyear, region)
+    outPutFile = capitalcost(dict_df['GIS_data'], outPutFile, trade_cost, startyear, endyear,region)
+
+    # Timeslice parameters
+    outPutFile = capacityfactor_solar_battery8h(elec, outPutFile, dict_df['GIS_data'], capacityfactor_wind,
+                                                capacityfactor_solar, solar_power, wind_power, timesliceDN, timesliceDE,
+                                                timesliceED, timesliceEN, timesliceNE, timesliceND, batteryCF,
+                                                battery13h, battery8h, startyear, endyear, months, region,
+                                                modeofoperation)
+    outPutFile = capacityfactor_solar_battery13h(elec, outPutFile, dict_df['GIS_data'], capacityfactor_wind,
+                                                 capacityfactor_solar, solar_power, wind_power, timesliceDN,
+                                                 timesliceDE, timesliceED, timesliceEN, timesliceNE, timesliceND,
+                                                 batteryCF, battery13h, battery8h, startyear, endyear, months, region,
+                                                 modeofoperation)
+    outPutFile = capacityfactor_PV(elec, outPutFile, dict_df['GIS_data'], capacityfactor_wind, capacityfactor_solar,
+                                   solar_power, wind_power, timesliceDN, timesliceDE, timesliceED, timesliceEN,
+                                   timesliceNE, timesliceND, batteryCF, battery13h, battery8h, startyear, endyear,
+                                   months, region, modeofoperation)
+    outPutFile = capacityfactor_wi(elec, outPutFile, dict_df['GIS_data'], capacityfactor_wind, capacityfactor_solar,
+                                   solar_power, wind_power, timesliceDN, timesliceDE, timesliceED, timesliceEN,
+                                   timesliceNE, timesliceND, batteryCF, battery13h, battery8h, startyear, endyear,
+                                   months, region, modeofoperation)
+    outPutFile = capacityfactor(elec, outPutFile, dict_df['GIS_data'], capacityfactor_wind, capacityfactor_solar,
+                                solar_power, wind_power, timesliceDN, timesliceDE, timesliceED, timesliceEN,
+                                timesliceNE, timesliceND, batteryCF, battery13h, battery8h, startyear, endyear, region,
+                                modeofoperation)
+    outPutFile = capacitytoactivity(trade, outPutFile, region, modeofoperation)
+    outPutFile = SpecifiedDemandProfile(outPutFile, demand, demand_urban, demand_rural, startyear, endyear, region,
+                                        modeofoperation)
+
+    # Mode of operation parameters
+    outPutFile = emissionactivity(df, outPutFile, startyear, endyear, region, emissions, modeofoperation)
+    outPutFile = variblecost(df, outPutFile, startyear, endyear, region, variable_cost, modeofoperation)
+    outPutFile = inputact(outPutFile, inputactivity, startyear, endyear, region, modeofoperation)
+    outPutFile = outputactivity(outPutFile, df, region, modeofoperation)
+
+    return(outPutFile)
+
+def read_files_validate():
+    cd = os.getcwd()
+    df = pd.read_csv(cd + '/data/GIS_data.csv')  # dtype={'user_id': int}
+    life = pd.read_csv(cd + '/data/operational_life.csv')  # dtype={'user_id': int}
+    totalannuallimit = pd.read_csv(cd + '/data/total_annual_technology_limit.csv')
+    trade = pd.read_csv(cd + '/data/capacitytoactivity.csv')  # dtype={'user_id': int}
+    inputactivity = pd.read_csv(cd + '/data/inputactivity.csv', index_col=0)  # dtype={'user_id': int}
+    demand = pd.read_csv(cd + '/data/demand.csv', index_col=0, header=0)  # dtype={'user_id': int}
+    demand_urban = pd.read_csv(cd + '/data/demandprofile.csv', index_col=0, header=0)  # dtype={'user_id': int}
+    demand_rural = pd.read_csv(cd + '/data/demandprofile_rural.csv', index_col=0, header=0)  # dtype={'user_id': int}
+    capacityfactor_wind = pd.read_csv(cd + '/data/capacityfactor_wind.csv', index_col=None)  # dtype={'user_id': int}
+    capacityfactor_wind['date'] = pd.to_datetime(capacityfactor_wind['date'], errors='coerce', format='%Y/%m/%d %H:%M')
+    capacityfactor_wind.index = capacityfactor_wind['date']
+    capacityfactor_wind = capacityfactor_wind.drop(columns=['date'])
+    # capacityfactor_wind.columns = pd.to_numeric(capacityfactor_wind.columns)
+    capacityfactor_solar = pd.read_csv(cd + '/data/capacityfactor_solar.csv', index_col=None, header=0)
+    capacityfactor_solar['date'] = pd.to_datetime(capacityfactor_solar['date'], errors='coerce',
+                                                  format='%Y/%m/%d %H:%M')
+    # capacityfactor_solar = capacityfactor_solar.drop(columns=['date'])
+    # capacityfactor_solar.columns = pd.to_numeric(capacityfactor_solar.columns)
+    # capacityfactor_solar = pd.read_csv(cd +'/data/capacityfactor_solar.csv', header=0)
+    capitalcost_RET = pd.read_csv(cd + '/data/capitalcost_RET.csv', header=0)
+    trade_cost = pd.read_csv(cd + '/data/capitalcost.csv')
+    emissions = pd.read_csv(cd + '/data/emissions.csv')
+    variable_cost = pd.read_csv(cd + '/data/variable_cost.csv', header=0)
+    fixed_cost = pd.read_csv(cd + '/data/fixed_cost.csv', header=0)
+
+
+def operational_life(outPutFile, GIS_data, region, operational_life):
+    if operational_life.empty:
+        return (outPutFile)
+    else:
+###############################################################
+### OperationalLife (Region, Technology,operationallife)
+#############################################################
+
+        dataToInsert = ""
+        print("Operational life", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+        param = "param OperationalLife default 1 :=\n"
+        startIndex = outPutFile.index(param) + len(param)
+
+        for i, row in GIS_data.iterrows():
+            location = row['Location']
+            for m, line in operational_life.iterrows():
+                t = line['Technology']
+                l = line['Life']
+                dataToInsert += "%s  %s_%i\t%i\n" % (region,t, location, l)
+        outPutFile = outPutFile[:startIndex] + dataToInsert + outPutFile[startIndex:]
+
+        return(outPutFile)
+
+def fixedcost(df, outPutFile, startyear, endyear, region, fixed_cost):
+    if fixed_cost.empty:
+        return (outPutFile)
+    else:
+    ###############################################################
+    #Variable cost (Region,Technology,ModeofOperation,Year,Variablecost)
+    ################################################################
+        print("Fixed cost", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+        dataToInsert = ""
+        param = "param FixedCost default 0 :=\n"
+
+        startIndex = outPutFile.index(param) + len(param)
+        for i, row in df.iterrows():
+           location = row['Location']
+           year = startyear
+           for m, line in fixed_cost.iterrows():
+               while year <= endyear:
+                   t = line['Technology']
+                   fc = line['Fixed Cost']
+                   dataToInsert += "%s  %s_%i\t%i\t%f\n" % (region, t, location, year, fc)
+                   year += 1
+        outPutFile = outPutFile[:startIndex] + dataToInsert + outPutFile[startIndex:]
+        print(outPutFile)
+        return(outPutFile)
+
 def emissionactivity(df, outPutFile, startyear, endyear,region, emissions, modeofoperation):
+    if emissions.empty:
+        return (outPutFile)
+    else:
     ###################################################################################
     #Emission activity (Region,Technology,Emissiontype,Modeofoperation, Year,Emission)
     ###################################################################################
-    print("Emission activity", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-    dataToInsert = ""
-    param = "param EmissionActivityRatio default 0 :=\n"
-    startIndex = outPutFile.index(param) + len(param)
-    emission = np.array([matrix.to_numpy() for _, matrix in emissions.groupby('Technology')])
-    print(emission)
-    cnt = 1
-    for i, row in df.iterrows():
-       location = row['Location']
-       year = startyear
-       count = 1
-       for m, line in emission.iterrows():
-           while year <= endyear:
-               t = line['Technology']
-               CO2 = line['CO2']
-               NOx = line['NOX']
-               i=0
-               while i < len(modeofoperation):
-                   k = line['modeofoperation']
-                   dataToInsert += "%s  %s_%i\tCO2\t%i\t%i\t%f\n" % (region, t, location, k, year, CO2)
-                   dataToInsert += "%s  %s_%i\tNOX\t%i\t%i\t%f\n" % (region, t, location, k, year, NOx)
-                   i+=1
-               year += 1
-       count += 1
-    cnt += 1
-    outPutFile = outPutFile[:startIndex] + dataToInsert + outPutFile[startIndex:]
-    return (outPutFile)
+        print("Emission activity", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+        dataToInsert = ""
+        param = "param EmissionActivityRatio default 0 :=\n"
+        startIndex = outPutFile.index(param) + len(param)
+        emission = np.array([matrix.to_numpy() for _, matrix in emissions.groupby('Technology')])
+        print(emission)
+        cnt = 1
+        for i, row in df.iterrows():
+           location = row['Location']
+           year = startyear
+           count = 1
+           for m, line in emission.iterrows():
+               while year <= endyear:
+                   t = line['Technology']
+                   CO2 = line['CO2']
+                   NOx = line['NOX']
+                   i=0
+                   while i < len(modeofoperation):
+                       k = line['modeofoperation']
+                       dataToInsert += "%s  %s_%i\tCO2\t%i\t%i\t%f\n" % (region, t, location, k, year, CO2)
+                       dataToInsert += "%s  %s_%i\tNOX\t%i\t%i\t%f\n" % (region, t, location, k, year, NOx)
+                       i+=1
+                   year += 1
+           count += 1
+        cnt += 1
+        outPutFile = outPutFile[:startIndex] + dataToInsert + outPutFile[startIndex:]
+        return (outPutFile)
 
 def variblecost(df, outPutFile, startyear, endyear, region, variable_cost, modeofoperation):
+    if variable_cost.empty:
+        return (outPutFile)
+    else:
     ###############################################################
     #Variable cost (Region,Technology,ModeofOperation,Year,Variablecost)
     ################################################################
-    print("Variable cost", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-    #reset
-    dataToInsert = ""
-    param = "param VariableCost default 0 :=\n"
-    startIndex = outPutFile.index(param) + len(param)
-    cnt = 1
-    for i, row in df.iterrows():
-       location = row['Location']
-       year = startyear
-       count = 1
-       for m, line in variable_cost.iterrows():
-           while year <= endyear:
-               t = line['Technology']
-               vc = line['Variable Cost']
-               i=0
-               while i < len(modeofoperation):
-                   k = modeofoperation[i]
-                   dataToInsert += "%s  %s_%i\t%i\t%i\t%f\n" % (region, t, location, k, year, vc)
-                   i+=1
-               year += 1
-       count += 1
-    cnt += 1
-    outPutFile = outPutFile[:startIndex] + dataToInsert + outPutFile[startIndex:]
-    return(outPutFile)
+        print("Variable cost", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+        #reset
+        dataToInsert = ""
+        param = "param VariableCost default 0 :=\n"
+        startIndex = outPutFile.index(param) + len(param)
+        cnt = 1
+        for i, row in df.iterrows():
+           location = row['Location']
+           year = startyear
+           count = 1
+           for m, line in variable_cost.iterrows():
+               while year <= endyear:
+                   t = line['Technology']
+                   vc = line['Variable Cost']
+                   i=0
+                   while i < len(modeofoperation):
+                       k = modeofoperation[i]
+                       dataToInsert += "%s  %s_%i\t%i\t%i\t%f\n" % (region, t, location, k, year, vc)
+                       i+=1
+                   year += 1
+           count += 1
+        cnt += 1
+        outPutFile = outPutFile[:startIndex] + dataToInsert + outPutFile[startIndex:]
+        return(outPutFile)
 
-def fixedcost(df, outPutFile, startyear, endyear, region, fixed_cost):
-    ###############################################################
-    #Variable cost (Region,Technology,ModeofOperation,Year,Variablecost)
-    ################################################################
-    print("Fixed cost", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-    dataToInsert = ""
-    param = "param FixedCost default 0 :=\n"
-    startIndex = outPutFile.index(param) + len(param)
-    cnt = 1
-    for i, row in df.iterrows():
-       location = row['Location']
-       year = startyear
-       count = 1
-       for m, line in fixed_cost.iterrows():
-           while year <= endyear:
-               t = line['Technology']
-               fc = line['Fixed Cost']
-               dataToInsert += "%s  %s_%i\t%i\t%f\n" % (region, t, location, year, fc)
-               year += 1
-       count += 1
-    cnt += 1
-
-    outPutFile = outPutFile[:startIndex] + dataToInsert + outPutFile[startIndex:]
-    return(outPutFile)
 
 def totaltechnologyannualactivityupperlimit(df,outPutFile, startyear, endyear,region,totalannuallimit):
-    dataToInsert = ""
+    if totalannuallimit.empty:
+        return (outPutFile)
+    else:
+
     #################################################################################
     #TotalTechnologyAnnualActivityUpperLimit (Region,technology,year,totaltechnologyupperlimit)
     ################################################################################
-    print("TotalTechnologyAnnualActivityUpperLimit", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-    param = "param TotalTechnologyAnnualActivityUpperLimit default 99999999999 :=\n"
-    startIndex = outPutFile.index(param) + len(param)
+        print("TotalTechnologyAnnualActivityUpperLimit", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+        param = "param TotalTechnologyAnnualActivityUpperLimit default 99999999999 :=\n"
+        startIndex = outPutFile.index(param) + len(param)
+        dataToInsert = ""
+        for index, row in df.iterrows():
+           location = row['Location']
+           year = startyear
+           while year <= endyear:
+               for m, line in totalannuallimit.iterrows():
+                   tech = line['Technology']
+                   cf = line[location]
+                   dataToInsert += "%s\t%s_%i\t%i\t%f\n" % (region, tech, location, year, cf)
+               year = year + 1
+        outPutFile = outPutFile[:startIndex] + dataToInsert + outPutFile[startIndex:]
 
-    for index, row in df.iterrows():
-       location = row['Location']
-       year = startyear
-       while year <= endyear:
-           for m, line in totalannuallimit.iterrows():
-               tech = line['Technology']
-               cf = line[location]
-               dataToInsert += "%s\t%s_%i\t%i\t%f\n" % (region, tech, location, year, cf)
-           year = year + 1
-    outPutFile = outPutFile[:startIndex] + dataToInsert + outPutFile[startIndex:]
-
-    return(outPutFile)
+        return(outPutFile)
 
 def inputact(outPutFile, inputactivity, startyear, endyear, region, modeofoperation):
-    dataToInsert = ""
-    ###########################################################################
-    #Inputactivity ratio (Region, technology, fuel, modeofoperation, year)
-    ###########################################################################
-    print("Input activity", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-    param = "param InputActivityRatio default 0 :=\n"
-    startIndex = outPutFile.index(param) + len(param)
+    if len(inputactivity) == 0:
+        return (outPutFile)
+    else:
+        dataToInsert = ""
+        ###########################################################################
+        #Inputactivity ratio (Region, technology, fuel, modeofoperation, year)
+        ###########################################################################
+        print("Input activity", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+        param = "param InputActivityRatio default 0 :=\n"
+        startIndex = outPutFile.index(param) + len(param)
 
-    for j, row in inputactivity.iterrows():
-       technology = row['Technology']
-       fuel = row['Fuel']
-       inputactivityratio = row['Inputactivity']
-       year = startyear
-       while year<=endyear:
-           i = 0
-           while i < len(modeofoperation):
-               k = modeofoperation[i]
-               dataToInsert += "%s\t%s\t%s\t%i\t%i\t%f\n" % (region, technology, fuel, k, year, inputactivityratio)
-               i += 1
-           year = year + 1
-    outPutFile = outPutFile[:startIndex] + dataToInsert + outPutFile[startIndex:]
-    print(outPutFile)
-    return (outPutFile)
+        for j, row in inputactivity.iterrows():
+           technology = row['Technology']
+           fuel = row['Fuel']
+           inputactivityratio = row['Inputactivity']
+           year = startyear
+           while year<=endyear:
+               i = 0
+               while i < len(modeofoperation):
+                   k = modeofoperation[i]
+                   dataToInsert += "%s\t%s\t%s\t%i\t%i\t%f\n" % (region, technology, fuel, k, year, inputactivityratio)
+                   i += 1
+               year = year + 1
+        outPutFile = outPutFile[:startIndex] + dataToInsert + outPutFile[startIndex:]
+        print(outPutFile)
+        return (outPutFile)
 
 def SpecifiedDemandProfile(outPutFile, demand, demand_urban, demand_rural, startyear, endyear,region, modeofoperation):
     dataToInsert = ""
@@ -696,7 +820,8 @@ def outputactivity(outPutFile, df,region, modeofoperation):
 
     #reset
 
-def specifiedannualdemand(outPutFile, demand,region, modeofoperation):
+def specifiedannualdemand(outPutFile, demand, region, startyear, endyear):
+
     #########################################################################
     #SpecifiedAnnualDemand (region,fuel,year,demand)
     ########################################################################
@@ -709,7 +834,7 @@ def specifiedannualdemand(outPutFile, demand,region, modeofoperation):
        year = startyear
        while year<=endyear:
           demandForThisYearAndlocation = demand.loc[j][year]
-          dataToInsert += "Kenya  EL3_%s\t%i\t%f\n" % (j, year, demandForThisYearAndlocation)
+          dataToInsert += "%s\tEL3_%s\t%i\t%f\n" % (region, j, year, demandForThisYearAndlocation)
           year = year + 1
     cnt = 1
 
@@ -817,7 +942,7 @@ def capitalcost_dynamic(df, outPutFile, capitalcost_RET, capacityfactor_wind, ca
     outPutFile = outPutFile[:startIndex] + dataToInsert + outPutFile[startIndex:]
     return(outPutFile)
 
-def capitalcost(df, outPutFile, trade_cost, startyear, endyear,region, modeofoperation):
+def capitalcost(df, outPutFile, trade_cost, startyear, endyear,region):
     dataToInsert = ""
 
      #################################################################
