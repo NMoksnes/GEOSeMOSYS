@@ -1,5 +1,12 @@
+<<<<<<< Updated upstream
 pandas
 numpy
 argparse
 logging
+=======
+pandas
+numpy
+argparse
+logging
+>>>>>>> Stashed changes
 unittest

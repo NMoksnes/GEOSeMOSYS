@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 Name,Month,Daysplit,Hour,,
 1D,1,D,06:00,,
 1E,1,E,18:00,,batteryCF = 900  #900W
@@ -35,3 +36,42 @@ Name,Month,Daysplit,Hour,,
 12D,12,D,06:00,,
 12E,12,E,18:00,,
 12N,12,N,23:00,,
+=======
+Name,Month,Daysplit,Hour,,
+1D,1,D,06:00,,
+1E,1,E,18:00,,batteryCF = 900  #900W
+1N,1,N,23:00,,battery13h = 13  #hours that the battery is operational
+2D,2,D,06:00,,battery8h = 8 #hours that the battery is operational
+2E,2,E,18:00,,
+2N,2,N,23:00,,timesliceDN = '06:00'
+3D,3,D,06:00,,timesliceDE = '17:00'
+3E,3,E,18:00,,timesliceED = '18:00'
+3N,3,N,23:00,,timesliceEN = '22:00'
+4D,4,D,06:00,,timesliceNE = '23:00'
+4E,4,E,18:00,,timesliceND = '05:00'
+4N,4,N,23:00,,"months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']"
+5D,5,D,06:00,,startyear = 2012
+5E,5,E,18:00,,endyear = 2040
+5N,5,N,23:00,,"modeofoperation = [1,2,3]"
+6D,6,D,06:00,,"region = ""Kenya"""
+6E,6,E,18:00,,
+6N,6,N,23:00,,
+7D,7,D,06:00,,
+7E,7,E,18:00,,
+7N,7,N,23:00,,
+8D,8,D,06:00,,
+8E,8,E,18:00,,
+8N,8,N,23:00,,
+9D,9,D,06:00,,
+9E,9,E,18:00,,
+9N,9,N,23:00,,
+10D,10,D,06:00,,
+10E,10,E,18:00,,
+10N,10,N,23:00,,
+11D,11,D,06:00,,
+11E,11,E,18:00,,
+11N,11,N,23:00,,
+12D,12,D,06:00,,
+12E,12,E,18:00,,
+12N,12,N,23:00,,
+>>>>>>> Stashed changes

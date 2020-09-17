@@ -1,2 +1,6 @@
+<<<<<<< Updated upstream
 hej
+=======
+hej
+>>>>>>> Stashed changes
 hej
