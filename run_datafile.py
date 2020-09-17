@@ -3,7 +3,7 @@ This script is to build a OSeMOSYS data file where you have many locations/count
 The script is user defined in the geographical, technology, year, timeslice dimesions, which makes the script very flexible.
 
 __author__ = "Nandi Moksnes, Sebastian Moksnes"
-__copyright__ = "Nandi Moksnes, nandi@kth.se"
+__copyright__ = "Nandi Moksnes"
 __licence__ = "mit"
 """
 
