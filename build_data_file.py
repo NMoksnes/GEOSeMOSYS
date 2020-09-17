@@ -178,16 +178,11 @@ def fixedcost(df, outPutFile, startyear, endyear, region, fixed_cost):
     print("Fixed cost", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     dataToInsert = ""
     param = "param FixedCost default 0 :=\n"
-<<<<<<< HEAD
     cnt = 1
-=======
-
->>>>>>> 4e23090fbab99d46eb403341a050703b4ce7d4bd
     startIndex = outPutFile.index(param) + len(param)
     for i, row in df.iterrows():
        location = row['Location']
        year = startyear
-<<<<<<< HEAD
        count=1
        for m, line in fixed_cost.iterrows():
            print()
@@ -198,14 +193,6 @@ def fixedcost(df, outPutFile, startyear, endyear, region, fixed_cost):
                year += 1
            count+=1
        cnt+=1
-=======
-       for m, line in fixed_cost.iterrows():
-           while year <= endyear:
-               t = line['Technology']
-               fc = line['Fixed Cost']
-               dataToInsert += "%s\t%s_%i\t%i\t%f\n" % (region, t, location, year, fc)
-               year += 1
->>>>>>> 4e23090fbab99d46eb403341a050703b4ce7d4bd
     outPutFile = outPutFile[:startIndex] + dataToInsert + outPutFile[startIndex:]
     return(outPutFile)
 

@@ -1,10 +1,2 @@
-<<<<<<< HEAD
-<<<<<<< Updated upstream
 hej
-=======
-hej
->>>>>>> Stashed changes
-=======
-hej
->>>>>>> 4e23090fbab99d46eb403341a050703b4ce7d4bd
 hej

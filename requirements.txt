@@ -1,18 +1,5 @@
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-=======
->>>>>>> 4e23090fbab99d46eb403341a050703b4ce7d4bd
 pandas
 numpy
 argparse
 logging
-<<<<<<< HEAD
-=======
-pandas
-numpy
-argparse
-logging
->>>>>>> Stashed changes
-=======
->>>>>>> 4e23090fbab99d46eb403341a050703b4ce7d4bd
 unittest

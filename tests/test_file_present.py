@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-=======
->>>>>>> 4e23090fbab99d46eb403341a050703b4ce7d4bd
-import unittest
-
-
-class MyTestCase(unittest.TestCase):
-    def test_presents_of_files(self):
-
-        self.assertEqual(True, False)
-
-
-if __name__ == '__main__':
-    unittest.main()
-<<<<<<< HEAD
-=======
 import unittest
 import os
 import sys
@@ -77,6 +60,3 @@ class ImportTestCase(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
->>>>>>> Stashed changes
-=======
->>>>>>> 4e23090fbab99d46eb403341a050703b4ce7d4bd
