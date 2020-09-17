@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 <<<<<<< Updated upstream
+=======
+>>>>>>> 4e23090fbab99d46eb403341a050703b4ce7d4bd
 Name,Month,Daysplit,Hour,,
 1D,1,D,06:00,,
 1E,1,E,18:00,,batteryCF = 900  #900W
@@ -36,6 +39,7 @@ Name,Month,Daysplit,Hour,,
 12D,12,D,06:00,,
 12E,12,E,18:00,,
 12N,12,N,23:00,,
+<<<<<<< HEAD
 =======
 Name,Month,Daysplit,Hour,,
 1D,1,D,06:00,,
@@ -75,3 +79,5 @@ Name,Month,Daysplit,Hour,,
 12E,12,E,18:00,,
 12N,12,N,23:00,,
 >>>>>>> Stashed changes
+=======
+>>>>>>> 4e23090fbab99d46eb403341a050703b4ce7d4bd

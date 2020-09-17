@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4e23090fbab99d46eb403341a050703b4ce7d4bd
 Column,Fuel,Technology,Outputactivity
 ,SO,KESO,1
 ,SOLAR_1,SO_1,1
@@ -4824,6 +4827,7 @@ Column,Fuel,Technology,Outputactivity
 ,EL3_375_1,TRLV_375_1,0.865
 ,EL3_376_0,TRLV_376_0,0.865
 ,EL3_376_1,TRLV_376_1,0.865
+<<<<<<< HEAD
 =======
 Column,Fuel,Technology,Outputactivity
 ,SO,KESO,1
@@ -9651,3 +9655,5 @@ Column,Fuel,Technology,Outputactivity
 ,EL3_376_0,TRLV_376_0,0.865
 ,EL3_376_1,TRLV_376_1,0.865
 >>>>>>> master
+=======
+>>>>>>> 4e23090fbab99d46eb403341a050703b4ce7d4bd

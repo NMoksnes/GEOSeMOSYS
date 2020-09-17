@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4e23090fbab99d46eb403341a050703b4ce7d4bd
 ###############
 #    Sets     #
 ###############
@@ -180,6 +183,7 @@ param ReserveMarginTagTechnology default 0 :=
 ;
 
 end;
+<<<<<<< HEAD
 =======
 ###############
 #    Sets     #
@@ -363,3 +367,5 @@ param ReserveMarginTagTechnology default 0 :=
 
 end;
 >>>>>>> master
+=======
+>>>>>>> 4e23090fbab99d46eb403341a050703b4ce7d4bd

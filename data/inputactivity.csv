@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4e23090fbab99d46eb403341a050703b4ce7d4bd
 Column,Fuel,Technology,Inputactivity
 ,KEEL2_1,TRHV_1,1
 ,KEEL2_2,TRHV_2,1
@@ -4467,6 +4470,7 @@ Column,Fuel,Technology,Inputactivity
 ,SO,SO_374,1
 ,SO,SO_375,1
 ,SO,SO_376,1
+<<<<<<< HEAD
 =======
 Column,Fuel,Technology,Inputactivity
 ,KEEL2_1,TRHV_1,1
@@ -8937,3 +8941,5 @@ Column,Fuel,Technology,Inputactivity
 ,SO,SO_375,1
 ,SO,SO_376,1
 >>>>>>> master
+=======
+>>>>>>> 4e23090fbab99d46eb403341a050703b4ce7d4bd

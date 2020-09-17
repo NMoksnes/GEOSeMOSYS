@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4e23090fbab99d46eb403341a050703b4ce7d4bd
 Technology,location,modeofoperation,CO2,NOx
 WI,1,1,3000,1
 WI,2,1,3000,1
@@ -30,6 +33,9 @@ SO,2,3,4,4
 SO,3,3,4,4
 SO,4,3,4,4
 SO,5,3,4,4
+<<<<<<< HEAD
 =======
 Technology,CO2,NOXDIGEN,6.94276E-05,2COPP,9.98,3.2
 >>>>>>> master
+=======
+>>>>>>> 4e23090fbab99d46eb403341a050703b4ce7d4bd
