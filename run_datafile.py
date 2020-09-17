@@ -107,23 +107,21 @@ startyear = 2012
 endyear = 2040
 modeofoperation = [1, 2, 3]
 region = "Kenya"
-
+param_file = '/osemosys_shell_param.txt'
 
 ###############################
 ##    Reset all values      ##
 ##############################
 
-######## Add a if sats after each function to see if the file exist, and return(outputfil) if not
 ## functions to run
-##arguments CMD
-#paths = (os.getcwd() + '\data')
-paths = 'C:\Windows'
+##arguments from CMD are below
+paths = (os.getcwd() + '\data')
 path = os.getcwd()
 file_object= os.getcwd() + '/GIS.txt'
 #####################################
 
 dict_df = load_csvs(paths)
-outPutFile = make_outputfile(path)
+outPutFile = make_outputfile(path, param_file)
 outPutFile = functions_to_run(dict_df,outPutFile, startyear, endyear, region, modeofoperation)
 
 #write data file
