@@ -117,7 +117,7 @@ param_file = '/osemosys_shell_param.txt'
 ##arguments from CMD are below
 paths = (os.getcwd() + '\data')
 path = os.getcwd()
-file_object= os.getcwd() + '/GIS.txt'
+file_object= os.getcwd() + '\results\GIS.txt'
 #####################################
 
 dict_df = load_csvs(paths)
