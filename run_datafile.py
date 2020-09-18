@@ -105,7 +105,7 @@ from build_data_file import *
 
 startyear = 2012
 endyear = 2040
-modeofoperation = [1, 2, 3]
+modeofoperation = [1, 2]
 region = "Kenya"
 param_file = '/osemosys_shell_param.txt'
 

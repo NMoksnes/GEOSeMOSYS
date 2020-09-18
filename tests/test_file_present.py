@@ -8,6 +8,7 @@ from build_data_file import*
 region = "region"
 startyear = 2012
 endyear = 2040
+modeofoperation = [1, 2]
 
 class ImportTestCase(unittest.TestCase):
     def test_files_load_csvs_count_nr_loaded_csv_should_be_2(self):
@@ -43,8 +44,7 @@ class ImportTestCase(unittest.TestCase):
         path = os.getcwd()
         outPutFile = make_outputfile(path, param_file)
         outPutFile = fixedcost(dict_df['GIS_data'], outPutFile, startyear, endyear, region, dict_df['fixed_cost'])
-        print(outPutFile)
-        test = "region\tMG_5\t2027\t1\n"
+        test = "region\tMG_5\t2027\t1.000000\n"
         assert test in outPutFile
 
     def test_SO_3_emissions_should_be_55_CO2_modeoperation_2_in_2027(self):
@@ -52,10 +52,10 @@ class ImportTestCase(unittest.TestCase):
         dict_df = load_csvs(paths)
         param_file = '\osemosys_shell_param.txt'
         path = os.getcwd()
-        modeofoperation = [1,2]
         outPutFile = make_outputfile(path, param_file)
-        outPutFile = emissionactivity(dict_df['GIS_data'], outPutFile, startyear, endyear,region, dict_df['emissions'], modeofoperation)
-        test = "region\tSO_3\tCO2\t2\t2027\t55\n"
+        outPutFile = emissionactivity(dict_df['GIS_data'], outPutFile, startyear, endyear,region, dict_df['emissions'])
+        print(outPutFile)
+        test = "region\tSO_3\tCO2\t2\t2027\t55.000000\n"
         assert test in outPutFile
 
 if __name__ == '__main__':

@@ -10,7 +10,6 @@ from datetime import datetime
 def load_csvs(paths):
     basdir = os.getcwd()
     os.chdir(paths)
-    print(os.getcwd())
     onlyfiles = [f for f in listdir(paths) if isfile(join(paths, f))]
     dfs = {}  #.csv files
     param=[]  #list of parameters
@@ -41,12 +40,12 @@ def functions_to_run(dict_df, outPutFile, startyear, endyear, region, modeofoper
         outPutFile = operational_life(outPutFile, dict_df['GIS_data'], region, dict_df['operational_life'])
     else:
         print('No operational_life file')
-############################################################################
+#################################################################################
     if 'fixed_cost' in dict_df:
         outPutFile = fixedcost(dict_df['GIS_data'], outPutFile, startyear, endyear, region, dict_df['fixed_cost'])
     else:
         print('No fixed_cost file')
-###########################################################################
+#####################################################################################
     if 'total_annual_technology_limit' in dict_df:
         outPutFile = totaltechnologyannualactivityupperlimit(dict_df['GIS_data'], outPutFile, startyear, endyear,
                                                              region, dict_df['total_annual_technology_limit'])
@@ -102,7 +101,7 @@ def functions_to_run(dict_df, outPutFile, startyear, endyear, region, modeofoper
 ###################### Mode of operation parameters######################
 
     if 'emissions' in dict_df:
-        outPutFile = emissionactivity(dict_df['GIS_data'], outPutFile, startyear, endyear, region, dict_df['emissions'], modeofoperation)
+        outPutFile = emissionactivity(dict_df['GIS_data'], outPutFile, startyear, endyear, region, dict_df['emissions'])
     else:
         print('No emissions file')
 ########################################################
@@ -178,25 +177,20 @@ def fixedcost(df, outPutFile, startyear, endyear, region, fixed_cost):
     print("Fixed cost", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     dataToInsert = ""
     param = "param FixedCost default 0 :=\n"
-    cnt = 1
     startIndex = outPutFile.index(param) + len(param)
     for i, row in df.iterrows():
        location = row['Location']
-       year = startyear
-       count=1
        for m, line in fixed_cost.iterrows():
-           print()
            t = line['Technology']
            fc = line['Fixed Cost']
+           year = startyear
            while year <= endyear:
                dataToInsert += "%s\t%s_%i\t%i\t%f\n" % (region, t, location, year, fc)
                year += 1
-           count+=1
-       cnt+=1
     outPutFile = outPutFile[:startIndex] + dataToInsert + outPutFile[startIndex:]
     return(outPutFile)
 
-def emissionactivity(df, outPutFile, startyear, endyear,region, emissions, modeofoperation):
+def emissionactivity(df, outPutFile, startyear, endyear,region, emissions):
 ###################################################################################
 #Emission activity (Region,Technology,Emissiontype,Modeofoperation, Year,Emission)
 ###################################################################################
@@ -204,27 +198,18 @@ def emissionactivity(df, outPutFile, startyear, endyear,region, emissions, modeo
     dataToInsert = ""
     param = "param EmissionActivityRatio default 0 :=\n"
     startIndex = outPutFile.index(param) + len(param)
-    emission = np.array([matrix.to_numpy() for _, matrix in emissions.groupby('Technology')])
-    print(emission)
-    cnt = 1
     for i, row in df.iterrows():
        location = row['Location']
-       year = startyear
-       count = 1
-       for m, line in emission.iterrows():
+       for m, line in emissions.iterrows():
+           year = startyear
+           t = line['Technology']
+           k = line['Modeofoperation']
+           CO2 = line['CO2']
+           NOx = line['NOx']
            while year <= endyear:
-               t = line['Technology']
-               CO2 = line['CO2']
-               NOx = line['NOX']
-               i=0
-               while i < len(modeofoperation):
-                   k = line['modeofoperation']
-                   dataToInsert += "%s  %s_%i\tCO2\t%i\t%i\t%f\n" % (region, t, location, k, year, CO2)
-                   dataToInsert += "%s  %s_%i\tNOX\t%i\t%i\t%f\n" % (region, t, location, k, year, NOx)
-                   i+=1
+               dataToInsert += "%s\t%s_%i\tCO2\t%i\t%i\t%f\n" % (region, t, location, k, year, CO2)
+               dataToInsert += "%s\t%s_%i\tNOX\t%i\t%i\t%f\n" % (region, t, location, k, year, NOx)
                year += 1
-       count += 1
-    cnt += 1
     outPutFile = outPutFile[:startIndex] + dataToInsert + outPutFile[startIndex:]
     return (outPutFile)
 
