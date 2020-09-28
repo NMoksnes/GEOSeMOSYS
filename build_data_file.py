@@ -21,6 +21,7 @@ def load_csvs(paths):
             param.append(files.split('.')[0])
         else:
             print("You have mixed file types in you directory, please make sure all are .csv type!")
+            os.chdir(basdir)
             exit()
     for i, value in enumerate(param):
         dict_df[param[i]] = dfs[param[i]+'.csv']

@@ -74,5 +74,20 @@ class ImportTestCase(unittest.TestCase):
                                                              region, dict_df['total_annual_technology_limit'])
         test = "region\tSO_5\t2027\t3000.000000\n"
         assert test in outPutFile
+
+    def test_specifiedannualdemand_EL3_3_7_2025(self):
+        paths = (os.getcwd() + '\data')
+        print(paths)
+        dict_df = load_csvs(paths)
+        param_file = '\osemosys_shell_param.txt'
+        path = os.getcwd()
+        print(path)
+        outPutFile = make_outputfile(path, param_file)
+        outPutFile = specifiedannualdemand(outPutFile, dict_df['demand'], region, startyear, endyear)
+        test = "region\tEL3_3\t2025\t7.000000\n"
+        assert test in outPutFile
+
+
+
 if __name__ == '__main__':
     unittest.main()
