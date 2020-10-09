@@ -5,37 +5,42 @@ from os import listdir
 from os.path import isfile, join
 from datetime import datetime
 
+import logging
+
+logger = logging.getLogger(__name__)
 
 def load_csvs(paths):
-    basdir = os.getcwd()
-    os.chdir(paths)
-    onlyfiles = [f for f in listdir(paths) if isfile(join(paths, f))]
-    dfs = {}  #.csv files
-    param=[]  #list of parameters
+
+    filepaths = [f for f in listdir(paths) if isfile(join(paths, f))]
+    onlyfiles = [os.path.join(paths, f) for f in filepaths]
     dict_df = {}
     for files in onlyfiles:
     #validate that the files are csv. Else the read function will not work
-        if files.split('.')[1] == 'csv':
-            dfs[files] = pd.read_csv(files, header=0)
-            param.append(files.split('.')[0])
+        _, filename = os.path.split(files)
+        name, ending = os.path.splitext(filename)
+        if ending == '.csv':
+            dict_df[name] = pd.read_csv(files, header=0)
         else:
-            print("You have mixed file types in you directory, please make sure all are .csv type!")
-            os.chdir(basdir)
-            exit()
-    for i, value in enumerate(param):
-        dict_df[param[i]] = dfs[param[i]+'.csv']
-    os.chdir(basdir)
+            print("You have mixed file types in you directory, please make sure all are .csv type! {}".format(files))
+
     return dict_df
 
-def make_outputfile(path, param_file):
-    inputFileName = path + param_file
+def make_outputfile(param_file):
+    """Creates a string from the template OSeMOSYS file
+
+    Arguments
+    ---------
+    param_file : str
+        Path to the parameter file
+    """
     allLinesFromXy = ""
-    with open(inputFileName, "r") as inputFile:
+    with open(param_file, "r") as inputFile:
         allLinesFromXy = inputFile.read()
     outPutFile = allLinesFromXy
-    return(outPutFile)
+    return outPutFile
 
 def functions_to_run(dict_df, outPutFile):
+    print(dict_df)
     if 'operational_life' in dict_df:
         outPutFile = operational_life(outPutFile, dict_df['GIS_data'],  dict_df['input_data'], dict_df['operational_life'])
     else:

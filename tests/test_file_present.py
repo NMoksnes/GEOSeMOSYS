@@ -2,17 +2,17 @@ import unittest
 import os
 import sys
 sys.path.insert(1, '../')
-from build_data_file import*
+from build_data_file import *
 
 
 class ImportTestCase(unittest.TestCase):
     def test_files_load_csvs_count_nr_loaded_csv_should_be_2(self):
-        paths = (os.getcwd() + '\data')
+        paths = os.path.join(os.getcwd(), 'data')
         files = load_csvs(paths)
         assert len(files) == 19
 
     def test_noncsv_files_gives_error_message_and_exit(self):
-        inv_paths = (os.getcwd() + '\invalid_test_data')
+        inv_paths = os.path.join(os.getcwd(), 'invalid_test_data')
         with self.assertRaises(SystemExit):
             load_csvs(inv_paths)
 
