@@ -10,7 +10,13 @@ import logging
 logger = logging.getLogger(__name__)
 
 def load_csvs(paths):
+    """Creates a dataframe dictionary from the csv files in /data : dict_df
 
+    Arguments
+    ---------
+    param_file : paths
+        Path to the data files (/data)
+    """
     filepaths = [f for f in listdir(paths) if isfile(join(paths, f))]
     onlyfiles = [os.path.join(paths, f) for f in filepaths]
     dict_df = {}
@@ -21,7 +27,7 @@ def load_csvs(paths):
         if ending == '.csv':
             dict_df[name] = pd.read_csv(files, header=0)
         else:
-            print("You have mixed file types in you directory, please make sure all are .csv type! {}".format(files))
+            print('You have mixed file types in you directory, please make sure all are .csv type! {}'.format(files))
 
     return dict_df
 
@@ -40,7 +46,14 @@ def make_outputfile(param_file):
     return outPutFile
 
 def functions_to_run(dict_df, outPutFile):
-    print(dict_df)
+    """Runs all the functions for the different parameters
+
+    Arguments
+    ---------
+    dict_df, outPutFile
+        dict_df: is a dictionary which contains all the csv files as dataframes from load_csv. Key is the name of the csv file
+        outPutFile: is a string with the empty OSeMOSYS parameters file from make_outputfile
+    """
     if 'operational_life' in dict_df:
         outPutFile = operational_life(outPutFile, dict_df['GIS_data'],  dict_df['input_data'], dict_df['operational_life'])
     else:
@@ -69,7 +82,7 @@ def functions_to_run(dict_df, outPutFile):
         print('No capitalcost_RET file')
 ###########################################################################
     if 'capitalcost' in dict_df:
-        outPutFile = capitalcost(dict_df['GIS_data'], outPutFile, dict_df['capitalcost'], dict_df['input_data'])
+        outPutFile = capitalcost(outPutFile, dict_df['capitalcost'], dict_df['input_data'])
     else:
         print('No capitalcost file')
 
@@ -96,7 +109,7 @@ def functions_to_run(dict_df, outPutFile):
         print('No capacitytoactivity file')
 #################################################################################
     # if 'demandprofile' in dict_df:
-    #     outPutFile = SpecifiedDemandProfile(outPutFile, dict_df['demand'], dict_df['demandprofile'],
+    #     outPutFile = SpecifiedDemandProfile(outPutFile, dict_df['demandprofile'],
     #                                         dict_df['input_data'])
     # else:
     #     print('No demandprofile file')
@@ -125,38 +138,17 @@ def functions_to_run(dict_df, outPutFile):
 
     return(outPutFile)
 
-def read_files_old_____():
-    cd = os.getcwd()
-    df = pd.read_csv(cd + '/data/GIS_data.csv')  # dtype={'user_id': int}
-    life = pd.read_csv(cd + '/data/operational_life.csv')  # dtype={'user_id': int}
-    totalannuallimit = pd.read_csv(cd + '/data/total_annual_technology_limit.csv')
-    trade = pd.read_csv(cd + '/data/capacitytoactivity.csv')  # dtype={'user_id': int}
-    inputactivity = pd.read_csv(cd + '/data/inputactivity.csv', index_col=0)  # dtype={'user_id': int}
-    demand = pd.read_csv(cd + '/data/demand.csv', index_col=0, header=0)  # dtype={'user_id': int}
-    demand_urban = pd.read_csv(cd + '/data/demandprofile.csv', index_col=0, header=0)  # dtype={'user_id': int}
-    demand_rural = pd.read_csv(cd + '/data/demandprofile_rural.csv', index_col=0, header=0)  # dtype={'user_id': int}
-    capacityfactor_wind = pd.read_csv(cd + '/data/capacityfactor_wind.csv', index_col=None)  # dtype={'user_id': int}
-    capacityfactor_wind['date'] = pd.to_datetime(capacityfactor_wind['date'], errors='coerce', format='%Y/%m/%d %H:%M')
-    capacityfactor_wind.index = capacityfactor_wind['date']
-    capacityfactor_wind = capacityfactor_wind.drop(columns=['date'])
-    # capacityfactor_wind.columns = pd.to_numeric(capacityfactor_wind.columns)
-    capacityfactor_solar = pd.read_csv(cd + '/data/capacityfactor_solar.csv', index_col=None, header=0)
-    capacityfactor_solar['date'] = pd.to_datetime(capacityfactor_solar['date'], errors='coerce',
-                                                  format='%Y/%m/%d %H:%M')
-    # capacityfactor_solar = capacityfactor_solar.drop(columns=['date'])
-    # capacityfactor_solar.columns = pd.to_numeric(capacityfactor_solar.columns)
-    # capacityfactor_solar = pd.read_csv(cd +'/data/capacityfactor_solar.csv', header=0)
-    capitalcost_RET = pd.read_csv(cd + '/data/capitalcost_RET.csv', header=0)
-    trade_cost = pd.read_csv(cd + '/data/capitalcost.csv')
-    emissions = pd.read_csv(cd + '/data/emissions.csv')
-    variable_cost = pd.read_csv(cd + '/data/variable_cost.csv', header=0)
-    fixed_cost = pd.read_csv(cd + '/data/fixed_cost.csv', header=0)
-
 def operational_life(outPutFile, GIS_data, input_data, operational_life):
-###############################################################
-### OperationalLife (Region, Technology,operationallife)
-#############################################################
-
+    """
+    builds the OperationalLife (Region, Technology, OperationalLife)
+    -------------
+    Arguments
+    outPutFile, GIS_data, input_data, operational_life
+        outPutFile: is a string containing the OSeMOSYS parameters file
+        GIS_data: is the location specific data which is used to iterate the data
+        input_data: contains meta data such as region, start year, end year, months, timeslices
+        OperationalLife: is the operational life per technology
+    """
     dataToInsert = ""
     print("Operational life", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     param = "param OperationalLife default 1 :=\n"
@@ -173,9 +165,16 @@ def operational_life(outPutFile, GIS_data, input_data, operational_life):
     return(outPutFile)
 
 def fixedcost(df, outPutFile, input_data, fixed_cost):
-###############################################################
-#Variable cost (Region,Technology,ModeofOperation,Year,Variablecost)
-################################################################
+    """
+    Builds the Fixed cost (Region, Technology, Year, Fixed cost)
+    -------------
+    Arguments
+    df, outPutFile, input_data, fixed_cost
+        outPutFile: is a string containing the OSeMOSYS parameters file
+        df: is the location specific data which is used to iterate the data
+        input_data: contains meta data such as region, start year, end year, months, timeslices
+        fixed_cost: is the fixed cost per technology
+    """
     print("Fixed cost", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     dataToInsert = ""
     param = "param FixedCost default 0 :=\n"
@@ -195,9 +194,16 @@ def fixedcost(df, outPutFile, input_data, fixed_cost):
     return(outPutFile)
 
 def emissionactivity(df, outPutFile, input_data, emissions):
-###################################################################################
-#Emission activity (Region,Technology,Emissiontype,Modeofoperation, Year,Emission)
-###################################################################################
+    """
+    Builds the Emission activity (Region, Technology, Emissiontype, Technology, ModeofOperation, Year, emissionactivity)
+    -------------
+    Arguments
+    df, outPutFile, input_data, emissions
+        outPutFile: is a string containing the OSeMOSYS parameters file
+        df: is the location specific data which is used to iterate the data
+        input_data: contains meta data such as region, start year, end year, months, timeslices
+        emissions: is the emissionactivity per technology and mode of operation
+    """
     print("Emission activity", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     dataToInsert = ""
     param = "param EmissionActivityRatio default 0 :=\n"
@@ -218,9 +224,17 @@ def emissionactivity(df, outPutFile, input_data, emissions):
     return (outPutFile)
 
 def variblecost(df, outPutFile, input_data, variable_cost):
-###############################################################
-#Variable cost (Region,Technology,ModeofOperation,Year,Variablecost)
-################################################################
+    """
+    Builds the Variable cost (Region, Technology, ModeofOperation, Year, Variablecost)
+    -------------
+    Arguments
+    df, outPutFile, input_data, variable_cost
+        outPutFile: is a string containing the OSeMOSYS parameters file
+        df: is the location specific data which is used to iterate the data
+        input_data: contains meta data such as region, start year, end year, months, timeslices
+        variable_cost: is the variable cost per technology and mode of operation
+    """
+
     print("Variable cost", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     dataToInsert = ""
     param = "param VariableCost default 0 :=\n"
@@ -240,14 +254,23 @@ def variblecost(df, outPutFile, input_data, variable_cost):
     outPutFile = outPutFile[:startIndex] + dataToInsert + outPutFile[startIndex:]
     return(outPutFile)
 
-def totaltechnologyannualactivityupperlimit(df,outPutFile, input_data,totalannuallimit):
-#################################################################################
-#TotalTechnologyAnnualActivityUpperLimit (Region,technology,year,totaltechnologyupperlimit)
-################################################################################
+def totaltechnologyannualactivityupperlimit(df,outPutFile, input_data, totalannuallimit):
+    """
+    Builds the TotalTechnologyAnnualActivityUpperLimit (Region, Technology, Year, TotalTechnologyUpperLimit)
+    -------------
+    Arguments
+    df,outPutFile, input_data, totalannuallimit
+        outPutFile: is a string containing the OSeMOSYS parameters file
+        df: is the location specific data which is used to iterate for the location specific the data
+        input_data: contains meta data such as region, start year, end year, months, timeslices
+        totalannuallimit: is the total annual limit per technology
+    """
+
     print("TotalTechnologyAnnualActivityUpperLimit", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    dataToInsert = ""
     param = "param TotalTechnologyAnnualActivityUpperLimit default 99999999999 :=\n"
     startIndex = outPutFile.index(param) + len(param)
-    dataToInsert = ""
+
     for index, row in df.iterrows():
        location = row['Location']
        year = int(input_data['startyear'][0])
@@ -261,10 +284,16 @@ def totaltechnologyannualactivityupperlimit(df,outPutFile, input_data,totalannua
     return(outPutFile)
 
 def inputact(outPutFile, inputactivity, input_data):
+    """
+    Builds the InputactivityRatio (Region, Technology, Fuel, Modeofoperation, Year, InputactivityRatio)
+    -------------
+    Arguments
+    outPutFile, inputactivity, input_data
+        outPutFile: is a string containing the OSeMOSYS parameters file
+        input_data: contains meta data such as region, start year, end year, months, timeslices
+        inputactivity: is the inputactivity per fuel and technology
+    """
     dataToInsert = ""
-    ###########################################################################
-    #Inputactivity ratio (Region, technology, fuel, modeofoperation, year)
-    ###########################################################################
     print("Input activity", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     param = "param InputActivityRatio default 0 :=\n"
     startIndex = outPutFile.index(param) + len(param)
@@ -281,11 +310,17 @@ def inputact(outPutFile, inputactivity, input_data):
     outPutFile = outPutFile[:startIndex] + dataToInsert + outPutFile[startIndex:]
     return (outPutFile)
 
-def SpecifiedDemandProfile(outPutFile, demand, demandprofile,input_data):
+def SpecifiedDemandProfile(outPutFile, demandprofile, input_data):
+    """
+    Builds the SpecifiedDemandProfile (Region, Fuel, Timeslice, Year, SpecifiedDemandProfile)
+    -------------
+    Arguments
+    outPutFile, demandprofile,input_data
+        outPutFile: is a string containing the OSeMOSYS parameters file
+        input_data: contains meta data such as region, start year, end year, months, timeslices
+        demandprofile: is the demandprofile per fuel and technology
+    """
     dataToInsert = ""
-    #########################################################################
-    #SpecifiedDemandProfile (region,fuel,timeslice,year,profile)
-    ########################################################################
     print("SpecifiedDemandProfile", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
     param = "param SpecifiedDemandProfile default 0 :=\n"
@@ -304,15 +339,21 @@ def SpecifiedDemandProfile(outPutFile, demand, demandprofile,input_data):
     outPutFile = outPutFile[:startIndex] + dataToInsert + outPutFile[startIndex:]
     return(outPutFile)
 
-def capacityfactor_wi(outPutFile, df, capacityfactor_wind, input_data, startyear, endyear, months):
+def capacityfactor_wi(outPutFile, df, capacityfactor_wind, input_data):
+    """
+    builds the Capacityfactor (Region, Technolgy, Timeslice, Year, CapacityFactor)
+    -------------
+    Arguments
+    outPutFile, df, capacityfactor_wind, input_data
+        outPutFile: is a string containing the OSeMOSYS parameters file
+        df: is the location specific data which is used to iterate the data
+        capacityfactor_wind: Hourly 8760 wind CF file for each location
+        input_data: contains meta data such as region, start year, end year, months, timeslices
+    """
     dataToInsert = ""
-    ###########################################################################
-     #Capacityfactor (region,technolgy,timeslice,year,CF)
-     ###########################################################################
     print("Capacity factor wind", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     param = "param CapacityFactor default 1 :=\n"
     startIndex = outPutFile.index(param) + len(param)
-    ######### WIND ###########
 
     for k, row in df.iterrows():
        location = row['Location']
@@ -378,14 +419,22 @@ def capacityfactor_wi(outPutFile, df, capacityfactor_wind, input_data, startyear
              average_wind = ((slice / len(thisMonthOnly.between_time(sliceStart, sliceEnd)._values))/wind_power)   #divided by capacity 600 kW
              dataToInsert += "Kenya  WI_%i\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
              m = m + 1
-
           year = year + 1
-
        cnt = 1
     outPutFile = outPutFile[:startIndex] + dataToInsert + outPutFile[startIndex:]
     return(outPutFile)
 
-def capacityfactor_PV(elec, outPutFile, df, capacityfactor_solar, input_data, startyear, endyear,months,region):
+def capacityfactor_PV(outPutFile, df, capacityfactor_solar, input_data):
+    """
+    builds the Capacityfactor (Region, Technolgy, Timeslice, Year, CapacityFactor)
+    -------------
+    Arguments
+    outPutFile, df, capacityfactor_solar, input_data
+        outPutFile: is a string containing the OSeMOSYS parameters file
+        df: is the location specific data which is used to iterate the data
+        capacityfactor_solar: Hourly 8760 solar CF file for each location
+        input_data: contains meta data such as region, start year, end year, months, timeslices
+    """
     dataToInsert = ""
 
     ######### Solar PV and MG ###############
@@ -497,151 +546,163 @@ def capacityfactor_PV(elec, outPutFile, df, capacityfactor_solar, input_data, st
     outPutFile = outPutFile[:startIndex] + dataToInsert + outPutFile[startIndex:]
     return(outPutFile)
 
-def capacityfactor_solar_battery13h(elec, outPutFile, df, capacityfactor_solar, input_data, batteryCF, startyear, endyear, months,region):
-    dataToInsert = ""
-    ######### Solar 13h battery ###############
-    print("Capacity factor solar PV & MG 13h", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-    param = "param CapacityFactor default 1 :=\n"
-    startIndex = outPutFile.index(param) + len(param)
+# def capacityfactor_solar_battery13h(elec, outPutFile, df, capacityfactor_solar, input_data, batteryCF, startyear, endyear, months,region):
+#
+#     dataToInsert = ""
+#     ######### Solar 13h battery ###############
+#     print("Capacity factor solar PV & MG 13h", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+#     param = "param CapacityFactor default 1 :=\n"
+#     startIndex = outPutFile.index(param) + len(param)
+#
+#     batteryCapacityFactor = batteryCF
+#     batteryTime = battery13h
+#     lastRowWasZero = False
+#     batteryConsumed = False
+#     index = 0
+#     for k, row in df.iterrows():
+#        location = row['Location']
+#        lastRowWasZero = False
+#        batteryConsumed = False
+#        index = 0
+#        for solarCapacity in capacityfactor_solar[location].values:
+#           currentRowIsZero = solarCapacity == 0
+#           if not currentRowIsZero:
+#              # This will happen when the current row is not zero. We should "reset" everything.
+#              batteryTime = battery13h
+#              batteryCapacityFactor = batteryCF
+#              batteryConsumed = False
+#              lastRowWasZero = False
+#           elif batteryTime == int(0):
+#              # This will happen when the current value is 0, the last value was zero and there is no batterytime left.
+#              batteryConsumed = True
+#              batteryTime = battery13h
+#              batteryCapacityFactor = batteryCF
+#           elif solarCapacity == 0 and lastRowWasZero and not batteryConsumed:
+#              # This will happen when the last row was zero and the current row is 0.
+#              capacityfactor_solar.at[index, location] = batteryCapacityFactor
+#              lastRowWasZero = True
+#              batteryTime -= 1
+#           elif not batteryConsumed:
+#              # This will happen when the last row was not zero and the current row is 0.
+#              capacityfactor_solar.at[index, location] = batteryCapacityFactor
+#              lastRowWasZero = True
+#              batteryTime -= 1
+#           index += 1
+#     capacityfactor_solar_batt = capacityfactor_solar.copy()
+#     capacityfactor_solar_batt.index = capacityfactor_solar_batt[0]
+#     #capacityfactor_solar = capacityfactor_solar.drop(columns=['0'])
+#     #capacityfactor_solar.columns = pd.to_numeric(capacityfactor_solar.columns)
+#     for k, row in df.iterrows():
+#        location = row['Location']
+#        # print(location)
+#        year = startyear
+#        while year <= endyear:
+#           m = 0
+#           while m < 11:
+#              currentMonth = months[m]
+#              startDate = "2016-%s-01" % (currentMonth)
+#              endDate = "2016-%s-01" % (months[m + 1])
+#              thisMonthOnly = capacityfactor_solar_batt.loc[startDate:endDate]
+#              #thisMonthOnly = capacityfactor_solar.query('date > @startDate and date < @endDate')
+#              #print(thisMonthOnly)
+#
+#              sliceStart = timesliceDN
+#              sliceEnd = timesliceDE
+#              ts = "%iD" % (m + 1)
+#              slice = sum(thisMonthOnly[(location)].between_time(sliceStart, sliceEnd))
+#              average_wind = (
+#              (slice / len(thisMonthOnly.between_time(sliceStart, sliceEnd)._values)) / solar_power)
+#              if location in elec.values:
+#                 dataToInsert += "Kenya  SOPV12h_%i_1\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
+#              dataToInsert += "Kenya  SOPV12h_%i_0\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
+#              dataToInsert += "Kenya  SOMG12h_%i\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
+#
+#              sliceStart = timesliceED
+#              sliceEnd = timesliceEN
+#              ts = "%iE" % (m + 1)
+#              slice = sum(thisMonthOnly[(location)].between_time(sliceStart, sliceEnd))
+#              average_wind = (
+#              (slice / len(thisMonthOnly.between_time(sliceStart, sliceEnd)._values)) / solar_power)
+#              if location in elec.values:
+#                 dataToInsert += "Kenya  SOPV12h_%i_1\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
+#              dataToInsert += "Kenya  SOPV12h_%i_0\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
+#              dataToInsert += "Kenya  SOMG12h_%i\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
+#
+#              sliceStart = timesliceNE
+#              sliceEnd = timesliceND
+#              ts = "%iN" % (m + 1)
+#              slice = sum(thisMonthOnly[(location)].between_time(sliceStart, sliceEnd))
+#              average_wind = (
+#              (slice / len(thisMonthOnly.between_time(sliceStart, sliceEnd)._values)) / solar_power)
+#              if location in elec.values:
+#                 dataToInsert += "Kenya  SOPV12h_%i_1\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
+#              dataToInsert += "Kenya  SOPV12h_%i_0\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
+#              dataToInsert += "Kenya  SOMG12h_%i\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
+#              m = m + 1
+#
+#           while m == 11:
+#              currentMonth = months[m]
+#              # for j, row in timeslice.iterrows():
+#              startDate = "2016-%s-01" % (currentMonth)
+#              endDate = "2016-%s-31" % (months[m])
+#              thisMonthOnly = capacityfactor_solar_batt.loc[startDate:endDate]
+#              #thisMonthOnly = capacityfactor_solar.query('date > @startDate and date < @endDate')
+#
+#              sliceStart = timesliceDN
+#              sliceEnd = timesliceDE
+#              ts = "%iD" % (m + 1)
+#              slice = sum(thisMonthOnly[(location)].between_time(sliceStart, sliceEnd))
+#              average_wind = (
+#              (slice / len(thisMonthOnly.between_time(sliceStart, sliceEnd)._values)) / solar_power)
+#              if location in elec.values:
+#                 dataToInsert += "Kenya  SOPV12h_%i_1\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
+#              dataToInsert += "Kenya  SOPV12h_%i_0\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
+#              dataToInsert += "Kenya  SOMG12h_%i\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
+#
+#              sliceStart = timesliceED
+#              sliceEnd = timesliceEN
+#              ts = "%iE" % (m + 1)
+#              slice = sum(
+#                 thisMonthOnly[(location)].between_time(sliceStart, sliceEnd))
+#              average_wind = (
+#              (slice / len(thisMonthOnly.between_time(sliceStart, sliceEnd)._values)) / solar_power)
+#              if location in elec.values:
+#                 dataToInsert += "Kenya  SOPV12h_%i_1\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
+#              dataToInsert += "Kenya  SOPV12h_%i_0\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
+#              dataToInsert += "Kenya  SOMG12h_%i\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
+#
+#              sliceStart = timesliceNE
+#              sliceEnd = timesliceND
+#              ts = "%iN" % (m + 1)
+#              slice = sum(
+#                 thisMonthOnly[(location)].between_time(sliceStart, sliceEnd))
+#              average_wind = (
+#              (slice / len(thisMonthOnly.between_time(sliceStart, sliceEnd)._values)) / solar_power)
+#              if location in elec.values:
+#                 dataToInsert += "Kenya  SOPV12h_%i_1\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
+#              dataToInsert += "Kenya  SOPV12h_%i_0\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
+#              dataToInsert += "Kenya  SOMG12h_%i\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
+#              m = m + 1
+#
+#           year = year + 1
+#
+#        cnt = 1
+#     outPutFile = outPutFile[:startIndex] + dataToInsert + outPutFile[startIndex:]
+#     return (outPutFile)
 
-    batteryCapacityFactor = batteryCF
-    batteryTime = battery13h
-    lastRowWasZero = False
-    batteryConsumed = False
-    index = 0
-    for k, row in df.iterrows():
-       location = row['Location']
-       lastRowWasZero = False
-       batteryConsumed = False
-       index = 0
-       for solarCapacity in capacityfactor_solar[location].values:
-          currentRowIsZero = solarCapacity == 0
-          if not currentRowIsZero:
-             # This will happen when the current row is not zero. We should "reset" everything.
-             batteryTime = battery13h
-             batteryCapacityFactor = batteryCF
-             batteryConsumed = False
-             lastRowWasZero = False
-          elif batteryTime == int(0):
-             # This will happen when the current value is 0, the last value was zero and there is no batterytime left.
-             batteryConsumed = True
-             batteryTime = battery13h
-             batteryCapacityFactor = batteryCF
-          elif solarCapacity == 0 and lastRowWasZero and not batteryConsumed:
-             # This will happen when the last row was zero and the current row is 0.
-             capacityfactor_solar.at[index, location] = batteryCapacityFactor
-             lastRowWasZero = True
-             batteryTime -= 1
-          elif not batteryConsumed:
-             # This will happen when the last row was not zero and the current row is 0.
-             capacityfactor_solar.at[index, location] = batteryCapacityFactor
-             lastRowWasZero = True
-             batteryTime -= 1
-          index += 1
-    capacityfactor_solar_batt = capacityfactor_solar.copy()
-    capacityfactor_solar_batt.index = capacityfactor_solar_batt[0]
-    #capacityfactor_solar = capacityfactor_solar.drop(columns=['0'])
-    #capacityfactor_solar.columns = pd.to_numeric(capacityfactor_solar.columns)
-    for k, row in df.iterrows():
-       location = row['Location']
-       # print(location)
-       year = startyear
-       while year <= endyear:
-          m = 0
-          while m < 11:
-             currentMonth = months[m]
-             startDate = "2016-%s-01" % (currentMonth)
-             endDate = "2016-%s-01" % (months[m + 1])
-             thisMonthOnly = capacityfactor_solar_batt.loc[startDate:endDate]
-             #thisMonthOnly = capacityfactor_solar.query('date > @startDate and date < @endDate')
-             #print(thisMonthOnly)
-
-             sliceStart = timesliceDN
-             sliceEnd = timesliceDE
-             ts = "%iD" % (m + 1)
-             slice = sum(thisMonthOnly[(location)].between_time(sliceStart, sliceEnd))
-             average_wind = (
-             (slice / len(thisMonthOnly.between_time(sliceStart, sliceEnd)._values)) / solar_power)
-             if location in elec.values:
-                dataToInsert += "Kenya  SOPV12h_%i_1\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
-             dataToInsert += "Kenya  SOPV12h_%i_0\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
-             dataToInsert += "Kenya  SOMG12h_%i\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
-
-             sliceStart = timesliceED
-             sliceEnd = timesliceEN
-             ts = "%iE" % (m + 1)
-             slice = sum(thisMonthOnly[(location)].between_time(sliceStart, sliceEnd))
-             average_wind = (
-             (slice / len(thisMonthOnly.between_time(sliceStart, sliceEnd)._values)) / solar_power)
-             if location in elec.values:
-                dataToInsert += "Kenya  SOPV12h_%i_1\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
-             dataToInsert += "Kenya  SOPV12h_%i_0\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
-             dataToInsert += "Kenya  SOMG12h_%i\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
-
-             sliceStart = timesliceNE
-             sliceEnd = timesliceND
-             ts = "%iN" % (m + 1)
-             slice = sum(thisMonthOnly[(location)].between_time(sliceStart, sliceEnd))
-             average_wind = (
-             (slice / len(thisMonthOnly.between_time(sliceStart, sliceEnd)._values)) / solar_power)
-             if location in elec.values:
-                dataToInsert += "Kenya  SOPV12h_%i_1\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
-             dataToInsert += "Kenya  SOPV12h_%i_0\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
-             dataToInsert += "Kenya  SOMG12h_%i\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
-             m = m + 1
-
-          while m == 11:
-             currentMonth = months[m]
-             # for j, row in timeslice.iterrows():
-             startDate = "2016-%s-01" % (currentMonth)
-             endDate = "2016-%s-31" % (months[m])
-             thisMonthOnly = capacityfactor_solar_batt.loc[startDate:endDate]
-             #thisMonthOnly = capacityfactor_solar.query('date > @startDate and date < @endDate')
-
-             sliceStart = timesliceDN
-             sliceEnd = timesliceDE
-             ts = "%iD" % (m + 1)
-             slice = sum(thisMonthOnly[(location)].between_time(sliceStart, sliceEnd))
-             average_wind = (
-             (slice / len(thisMonthOnly.between_time(sliceStart, sliceEnd)._values)) / solar_power)
-             if location in elec.values:
-                dataToInsert += "Kenya  SOPV12h_%i_1\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
-             dataToInsert += "Kenya  SOPV12h_%i_0\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
-             dataToInsert += "Kenya  SOMG12h_%i\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
-
-             sliceStart = timesliceED
-             sliceEnd = timesliceEN
-             ts = "%iE" % (m + 1)
-             slice = sum(
-                thisMonthOnly[(location)].between_time(sliceStart, sliceEnd))
-             average_wind = (
-             (slice / len(thisMonthOnly.between_time(sliceStart, sliceEnd)._values)) / solar_power)
-             if location in elec.values:
-                dataToInsert += "Kenya  SOPV12h_%i_1\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
-             dataToInsert += "Kenya  SOPV12h_%i_0\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
-             dataToInsert += "Kenya  SOMG12h_%i\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
-
-             sliceStart = timesliceNE
-             sliceEnd = timesliceND
-             ts = "%iN" % (m + 1)
-             slice = sum(
-                thisMonthOnly[(location)].between_time(sliceStart, sliceEnd))
-             average_wind = (
-             (slice / len(thisMonthOnly.between_time(sliceStart, sliceEnd)._values)) / solar_power)
-             if location in elec.values:
-                dataToInsert += "Kenya  SOPV12h_%i_1\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
-             dataToInsert += "Kenya  SOPV12h_%i_0\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
-             dataToInsert += "Kenya  SOMG12h_%i\t%s\t%i\t%f\n" % (location, ts, year, average_wind)
-             m = m + 1
-
-          year = year + 1
-
-       cnt = 1
-    outPutFile = outPutFile[:startIndex] + dataToInsert + outPutFile[startIndex:]
-    return (outPutFile)
-
-def capacityfactor_solar_battery(elec, outPutFile, df, capacityfactor_solar, input_data, capitalcost_RET, startyear, endyear, months, region):
-
+def capacityfactor_solar_battery(outPutFile, df, capacityfactor_solar, input_data, capitalcost_RET):
+    """
+    builds the Capacityfactor(Region, Technolgy, Timeslice, Year, CapacityFactor)
+    This method is for capacityfactor which does not use storage equations
+    -------------
+    Arguments
+    outPutFile, df, capacityfactor_solar, input_data, capitalcost_RET
+        outPutFile: is a string containing the OSeMOSYS parameters file
+        df: is the location specific data which is used to iterate the data
+        capacityfactor_solar: Hourly 8760 solar CF file for each location
+        input_data: contains meta data such as region, start year, end year, months, timeslices
+        capitalcost_RET: --
+    """
     print("Capacity factor solar with battery", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     param = "param CapacityFactor default 1 :=\n"
     startIndex = outPutFile.index(param) + len(param)
@@ -782,10 +843,16 @@ def capacityfactor_solar_battery(elec, outPutFile, df, capacityfactor_solar, inp
     return (outPutFile)
 
 def outputactivity(outPutFile, outputactivity, input_data):
+    """
+    builds the Outputactivity(Region, Technology, Fuel, ModeofOperation, Year, outputactivity)
+    -------------
+    Arguments
+    outPutFile, outputactivity, input_data
+        outPutFile: is a string containing the OSeMOSYS parameters file
+        outputactivity: The outputactivity between the Technology and Fuel
+        input_data: contains meta data such as region, start year, end year, months, timeslices
+    """
     dataToInsert = ""
-    ###########################################################################
-    #Outputactivity ratio
-    ###########################################################################
     print("Outputactivity", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     param = "param OutputActivityRatio default 0 :=\n"
     startIndex = outPutFile.index(param) + len(param)
@@ -804,9 +871,15 @@ def outputactivity(outPutFile, outputactivity, input_data):
     return(outPutFile)
 
 def specifiedannualdemand(outPutFile, demand, input_data):
-    #########################################################################
-    #SpecifiedAnnualDemand (region,fuel,year,demand)
-    ########################################################################
+    """
+    builds the SpecifiedAnnualDemand (Region, Fuel, Year, Demand)
+    -------------
+    Arguments
+    outPutFile, demand, input_data
+        outPutFile: is a string containing the OSeMOSYS parameters file
+        demand: The demand per Fuel
+        input_data: contains meta data such as region, start year, end year, months, timeslices
+    """
     print("SpecifiedAnnualDemand", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     param = "param SpecifiedAnnualDemand default 0 :=\n"
     dataToInsert = ""
@@ -822,10 +895,19 @@ def specifiedannualdemand(outPutFile, demand, input_data):
     return(outPutFile)
 
 def capitalcost_dynamic(df, outPutFile, capitalcost_RET, capacityfactor_wind, capacityfactor_solar, input_data):
+    """
+    builds the Capitalcost (Region, Technology, Year, CapitalCost) where the cost is dynamic. Here when the capacity factor vary for Wind
+    -------------
+    Arguments
+    df, outPutFile, capitalcost_RET, capacityfactor_wind, capacityfactor_solar, input_data
+        df: is the location specific data which is used to iterate the data
+        outPutFile: is a string containing the OSeMOSYS parameters file
+        capitalcost_RET: The capital cost per technology and capacity factor
+        capacityfactor_wind: Hourly 8760 wind CF file for each location
+        capacityfactor_solar: Hourly 8760 solar CF file for each location
+        input_data: contains meta data such as region, start year, end year, months, timeslices
+    """
     dataToInsert = ""
-    ##################################################################
-    #Capital cost (region,technology,year,capitalcost)
-    ##################################################################
     print("Capital cost dynamic cost", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     param = "param CapitalCost default 0 :=\n"
     startIndex = outPutFile.index(param) + len(param)
@@ -909,12 +991,18 @@ def capitalcost_dynamic(df, outPutFile, capitalcost_RET, capacityfactor_wind, ca
     outPutFile = outPutFile[:startIndex] + dataToInsert + outPutFile[startIndex:]
     return(outPutFile)
 
-def capitalcost(df, outPutFile, trade_cost, input_data):
+def capitalcost(outPutFile, trade_cost, input_data):
+    """
+    builds the Capital cost (region,technology,year,capitalcost)
+    -------------
+    Arguments
+    outPutFile, outputactivity, trade_cost
+        outPutFile: is a string containing the OSeMOSYS parameters file
+        trade_cost: The Capitalcost which is not dynamic
+        input_data: contains meta data such as region, start year, end year, months, timeslices
+    """
     dataToInsert = ""
 
-     #################################################################
-    #Capital cost (region,technology,year,capitalcost)
-    ################################################################
     print("Capital cost", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     param = "param CapitalCost default 0 :=\n"
     startIndex = outPutFile.index(param) + len(param)
@@ -922,7 +1010,6 @@ def capitalcost(df, outPutFile, trade_cost, input_data):
     for m, row in trade_cost.iterrows():
       cost = row['Capitalcost']
       tech = row['Technology']
-
       year = int(input_data['startyear'][0])
       while year <= int(input_data['endyear'][0]):
          dataToInsert += "%s\t%s\t%i\t%f\n" % (input_data['region'][0], tech, year, cost)
@@ -932,9 +1019,15 @@ def capitalcost(df, outPutFile, trade_cost, input_data):
     return(outPutFile)
 
 def capacitytoactivity(trade, outPutFile, input_data):
-    #################################################
-    # CapacityToActivityUnit (region,technology,capacitytoactivityunit)
-    #################################################
+    """
+    builds the CapacityToActivityUnit (Region, Technology, CapacitytoActivityUnit)
+    -------------
+    Arguments
+    trade, outPutFile, input_data
+        outPutFile: is a string containing the OSeMOSYS parameters file
+        trade: The capacitytoactivity for each technology
+        input_data: contains meta data such as region, start year, end year, months, timeslices
+    """
     dataToInsert = ""
     print("Capacity to activity", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     param = "param CapacityToActivityUnit default 1 :=\n"
@@ -949,6 +1042,14 @@ def capacitytoactivity(trade, outPutFile, input_data):
     return(outPutFile)
 
 def write_to_file(file_object, outPutFile):
+    """
+    write_to_file writes the string outPutFile to file_object
+    -------------
+    Arguments
+    file_object, outPutFile
+        file_object: is the path and name of the file where the datafile will be saved
+        outPutFile:  is the accumulated final string of all data
+    """
 ###############################################################
 # write all to file
 #########################################################

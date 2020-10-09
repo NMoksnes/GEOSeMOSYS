@@ -1,8 +1,8 @@
 """
 This script is to build a OSeMOSYS data file where you have many locations/countries.
-The script is user defined in the geographical, technology, year, timeslice dimesions, which makes the script very flexible.
+The script is user defined in the geographical, technology, year, timeslice dimesions, which makes the script flexible.
 
-__author__ = "Nandi Moksnes, Sebastian Moksnes"
+__author__ = "Nandi Moksnes, Sebastian Moksnes", "Will Usher"
 __copyright__ = "Nandi Moksnes"
 __licence__ = "mit"
 """
@@ -16,11 +16,8 @@ import logging
 from datetime import datetime
 from build_data_file import load_csvs, make_outputfile, functions_to_run, write_to_file
  
+logger = logging.getLogger(__name__)
 
-#CMD line read from https://github.com/willu47/lcoe/blob/master/src/lcoe/lcoe.py author Will Usher
-
-# _logger = logging.getLogger(__name__)
-#
 def parse_args(args):
     """Parse command line parameters
     Args:
@@ -63,7 +60,6 @@ def run(argv):
     dict_df = load_csvs(args.data_path)
     outPutFile = make_outputfile(args.template)
     outPutFile = functions_to_run(dict_df, outPutFile)
-
     #write data file
     write_to_file(args.output_path, outPutFile)
 
