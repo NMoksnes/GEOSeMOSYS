@@ -15,8 +15,7 @@ import sys
 import logging
 from datetime import datetime
 from build_data_file import load_csvs, make_outputfile, functions_to_run, write_to_file
-
-from 
+ 
 
 #CMD line read from https://github.com/willu47/lcoe/blob/master/src/lcoe/lcoe.py author Will Usher
 
@@ -56,10 +55,11 @@ def parse_args(args):
     return parser.parse_args(args)
 
 
-def run():
+def run(argv):
     """Entry point for console_scripts
     """
-    args = parse_args(sys.argv[1:])
+    args = parse_args(argv)
+
     dict_df = load_csvs(args.data_path)
     outPutFile = make_outputfile(args.template)
     outPutFile = functions_to_run(dict_df, outPutFile)
@@ -69,4 +69,4 @@ def run():
 
 
 if __name__ == "__main__":
-    run()
+    run(sys.argv[1:])
