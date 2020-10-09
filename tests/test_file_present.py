@@ -43,13 +43,13 @@ class ImportTestCase(unittest.TestCase):
         test = "region\tMG_5\t2027\t1.000000\n"
         assert test in outPutFile
 
-    def test_SO_3_emissions_should_be_55_CO2_modeoperation_2_in_2027(self):
+    def test_SO_3_emissions_should_be_5_CO2_modeoperation_2_in_2027(self):
         paths = os.path.join(os.getcwd(), 'data')
         dict_df = load_csvs(paths)
         path = os.path.join(os.getcwd(), 'osemosys_shell_param.txt')
         outPutFile = make_outputfile(path)
         outPutFile = emissionactivity(dict_df['GIS_data'], outPutFile, dict_df['input_data'], dict_df['emissions'])
-        test = "region\tSO_3\tCO2\t2\t2027\t55.000000\n"
+        test = "region\tSO_3\tCO2\t2\t2027\t5.000000\n"
         assert test in outPutFile
 
     def test_total_annual_limit_SO_5_should_be_3000(self):

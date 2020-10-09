@@ -209,7 +209,7 @@ def emissionactivity(df, outPutFile, input_data, emissions):
     param = "param EmissionActivityRatio default 0 :=\n"
     startIndex = outPutFile.index(param) + len(param)
     for i, row in df.iterrows():
-       location = row[0]
+       location = i
        for m, line in emissions.iterrows():
            year = int(input_data['startyear'][0])
            t = line['Technology']
