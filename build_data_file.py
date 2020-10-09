@@ -27,13 +27,19 @@ def load_csvs(paths):
     os.chdir(basdir)
     return dict_df
 
-def make_outputfile(path, param_file):
-    inputFileName = path + param_file
+def make_outputfile(param_file):
+    """Creates a string from the template OSeMOSYS file
+
+    Arguments
+    ---------
+    param_file : str
+        Path to the parameter file
+    """
     allLinesFromXy = ""
-    with open(inputFileName, "r") as inputFile:
+    with open(param_file, "r") as inputFile:
         allLinesFromXy = inputFile.read()
     outPutFile = allLinesFromXy
-    return(outPutFile)
+    return outPutFile
 
 def functions_to_run(dict_df, outPutFile):
     if 'operational_life' in dict_df:
