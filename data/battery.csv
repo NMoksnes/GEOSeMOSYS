@@ -1,5 +1,3 @@
-Technology,Variable Cost
-WI,47
-PV,15
-MG,20
-PV4h,18
+Battery time,Batterycapacityfactor
+8,0.9
+13,0.9

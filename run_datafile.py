@@ -95,18 +95,6 @@ from build_data_file import *
 #       data = datafile.readlines()
 
 
-#### ADD Validation of type of file that is imported
-
-
-#PV_MG_CF = [0.12, 0.14,0.155,0.17,0.20]
-#PV_SA_CF = [0.13,0.15, 0.16,0.18, 0.21]
-#Wind_CF = [0.48,0.47,0.45,0.44,0.41,0.37,0.31,0.25,0.19,0.125]
-#Battery = [8,13]
-
-startyear = 2012
-endyear = 2040
-modeofoperation = [1, 2]
-region = "Kenya"
 param_file = '/osemosys_shell_param.txt'
 
 ###############################
@@ -115,14 +103,15 @@ param_file = '/osemosys_shell_param.txt'
 
 ## functions to run
 ##arguments from CMD are below
+
 paths = (os.getcwd() + '\data')
 path = os.getcwd()
-file_object= os.getcwd() + '\results\GIS.txt'
+file_object= os.getcwd() + r'\results\GIS.txt'
 #####################################
 
 dict_df = load_csvs(paths)
 outPutFile = make_outputfile(path, param_file)
-outPutFile = functions_to_run(dict_df,outPutFile, startyear, endyear, region, modeofoperation)
+outPutFile = functions_to_run(dict_df,outPutFile)
 
 #write data file
 write_to_file(file_object, outPutFile)

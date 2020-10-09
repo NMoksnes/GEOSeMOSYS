@@ -35,88 +35,86 @@ def make_outputfile(path, param_file):
     outPutFile = allLinesFromXy
     return(outPutFile)
 
-def functions_to_run(dict_df, outPutFile, startyear, endyear, region, modeofoperation):
+def functions_to_run(dict_df, outPutFile):
     if 'operational_life' in dict_df:
-        outPutFile = operational_life(outPutFile, dict_df['GIS_data'], region, dict_df['operational_life'])
+        outPutFile = operational_life(outPutFile, dict_df['GIS_data'],  dict_df['input_data'], dict_df['operational_life'])
     else:
         print('No operational_life file')
 #################################################################################
     if 'fixed_cost' in dict_df:
-        outPutFile = fixedcost(dict_df['GIS_data'], outPutFile, input_data, dict_df['fixed_cost'])
+        outPutFile = fixedcost(dict_df['GIS_data'], outPutFile, dict_df['input_data'], dict_df['fixed_cost'])
     else:
         print('No fixed_cost file')
 #####################################################################################
     if 'total_annual_technology_limit' in dict_df:
-        outPutFile = totaltechnologyannualactivityupperlimit(dict_df['GIS_data'], outPutFile, startyear, endyear,
-                                                             region, dict_df['total_annual_technology_limit'])
+        outPutFile = totaltechnologyannualactivityupperlimit(dict_df['GIS_data'], outPutFile, dict_df['input_data'], dict_df['total_annual_technology_limit'])
     else:
         print('No total_annual_technology_limit file')
 
     if 'demand' in dict_df:
-        outPutFile = specifiedannualdemand(outPutFile, dict_df['demand'], region, startyear, endyear)
+        outPutFile = specifiedannualdemand(outPutFile, dict_df['demand'], dict_df['input_data'])
     else:
         print('No demand file')
 ####################################################################################
     if 'capitalcost_RET' in dict_df:
         outPutFile = capitalcost_dynamic(dict_df['GIS_data'], outPutFile, dict_df['capitalcost_RET'],
-                                         dict_df['capacityfactor_wind'], dict_df['capacityfactor_solar'], startyear,
-                                         endyear, region)
+                                         dict_df['capacityfactor_wind'], dict_df['capacityfactor_solar'],
+                                         dict_df['input_data'])
     else:
         print('No capitalcost_RET file')
 ###########################################################################
     if 'capitalcost' in dict_df:
-        outPutFile = capitalcost(dict_df['GIS_data'], outPutFile, dict_df['capitalcost'], startyear, endyear, region)
+        outPutFile = capitalcost(dict_df['GIS_data'], outPutFile, dict_df['capitalcost'], dict_df['input_data'])
     else:
         print('No capitalcost file')
 
 ##########################################################
 ###########TIMESLICE parameters###############
-    if 'battery' in dict_df:
-        outPutFile = capacityfactor_solar_battery(elec, outPutFile, dict_df['GIS_data'], dict_df['capacityfactor_solar'], dict_df['input_data'], dict_df['battery'], startyear, endyear, months, region)
-    else:
-        print('No battery file')
-################################################################################
-    if 'capacityfactor_solar' in dict_df:
-        outPutFile = capacityfactor_PV(elec, outPutFile, dict_df['GIS_data'], dict_df['capacityfactor_solar'], dict_df['input_data'], startyear, endyear,
-                                       months, region)
-    else:
-        print('No capacityfactor_solar file')
-###############################################################################
-    if 'capacityfactor_wind' in dict_df:
-        outPutFile = capacityfactor_wi(outPutFile, dict_df['GIS_data'],  dict_df['capacityfactor_wind'], dict_df['input_data'], startyear, endyear,
-                                       months, region)
-    else:
-        print('No capacityfactor_wind file')
+#     if 'battery' in dict_df:
+#         outPutFile = capacityfactor_solar_battery(elec, outPutFile, dict_df['GIS_data'], dict_df['capacityfactor_solar'], dict_df['input_data'], dict_df['battery'], dict_df['input_data'])
+#     else:
+#         print('No battery file')
+# ################################################################################
+#     if 'capacityfactor_solar' in dict_df:
+#         outPutFile = capacityfactor_PV(elec, outPutFile, dict_df['GIS_data'], dict_df['capacityfactor_solar'], dict_df['input_data'], dict_df['input_data'])
+#     else:
+#         print('No capacityfactor_solar file')
+# ###############################################################################
+#     if 'capacityfactor_wind' in dict_df:
+#         outPutFile = capacityfactor_wi(outPutFile, dict_df['GIS_data'],  dict_df['capacityfactor_wind'], dict_df['input_data'], dict_df['input_data'])
+#     else:
+#         print('No capacityfactor_wind file')
 ##############################################################################
     if 'capacitytoactivity' in dict_df:
-        outPutFile = capacitytoactivity(dict_df['capacitytoactivity'], outPutFile, region)
+        outPutFile = capacitytoactivity(dict_df['capacitytoactivity'], outPutFile, dict_df['input_data'])
     else:
         print('No capacitytoactivity file')
 #################################################################################
-    if 'demandprofile' in dict_df:
-        outPutFile = SpecifiedDemandProfile(outPutFile, dict_df['demand'], dict_df['demandprofile'], startyear, endyear, region)
-    else:
-        print('No demandprofile file')
+    # if 'demandprofile' in dict_df:
+    #     outPutFile = SpecifiedDemandProfile(outPutFile, dict_df['demand'], dict_df['demandprofile'],
+    #                                         dict_df['input_data'])
+    # else:
+    #     print('No demandprofile file')
 ###########################################################
 ###################### Mode of operation parameters######################
 
     if 'emissions' in dict_df:
-        outPutFile = emissionactivity(dict_df['GIS_data'], outPutFile, startyear, endyear, region, dict_df['emissions'])
+        outPutFile = emissionactivity(dict_df['GIS_data'], outPutFile, dict_df['input_data'], dict_df['emissions'])
     else:
         print('No emissions file')
 ########################################################
     if 'variable_cost' in dict_df:
-        outPutFile = variblecost(dict_df['GIS_data'], outPutFile, startyear, endyear, region, dict_df['variable_cost'])
+        outPutFile = variblecost(dict_df['GIS_data'], outPutFile, dict_df['input_data'], dict_df['variable_cost'])
     else:
         print('No variable_cost file')
 #############################################################
     if 'inputactivity' in dict_df:
-        outPutFile = inputact(outPutFile, dict_df['inputactivity'], startyear, endyear, region)
+        outPutFile = inputact(outPutFile, dict_df['inputactivity'], dict_df['input_data'])
     else:
         print('No inputactivity file')
 ################################################################
     if 'outputactivity' in dict_df:
-        outPutFile = outputactivity(outPutFile, dict_df['outputactivity'], region)
+        outPutFile = outputactivity(outPutFile, dict_df['outputactivity'], dict_df['input_data'])
     else:
         print('No outputactivity file')
 

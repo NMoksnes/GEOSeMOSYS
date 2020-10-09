@@ -4,11 +4,6 @@ import sys
 sys.path.insert(1, '../')
 from build_data_file import*
 
-##Global variables
-region = "region"
-startyear = 2012
-endyear = 2040
-modeofoperation = [1, 2]
 
 class ImportTestCase(unittest.TestCase):
     def test_files_load_csvs_count_nr_loaded_csv_should_be_2(self):
@@ -43,7 +38,6 @@ class ImportTestCase(unittest.TestCase):
         param_file = '\osemosys_shell_param.txt'
         path = os.getcwd()
         outPutFile = make_outputfile(path, param_file)
-        #        outPutFile = fixedcost(dict_df['GIS_data'], outPutFile, startyear, endyear, region, dict_df['fixed_cost'])
         outPutFile = fixedcost(dict_df['GIS_data'], outPutFile, dict_df['input_data'], dict_df['fixed_cost'])
         test = "region\tMG_5\t2027\t1.000000\n"
         assert test in outPutFile
@@ -179,8 +173,8 @@ class ImportTestCase(unittest.TestCase):
         param_file = '\osemosys_shell_param.txt'
         path = os.getcwd()
         outPutFile = make_outputfile(path, param_file)
-        outPutFile = SpecifiedDemandProfile(outPutFile, dict_df['demand'], dict_df['demandprofile'], dict_df['input_data'])
-        test = "region\tEL3_4\t2025\t2.410609963\n"
+        outPutFile = specifiedannualdemand(outPutFile, dict_df['demand'], dict_df['input_data'])
+        test = "region\tEL3_4\t2025\t2.410610\n"
         assert test in outPutFile
 
     def test_variable_cost_WI_5_scould_be_5(self):
@@ -193,15 +187,15 @@ class ImportTestCase(unittest.TestCase):
         test = "region\tWI_5\t1\t2025\t5.000000\n"
         assert test in outPutFile
 
-    def test_specifieddemandprofile_EL3_10E_is_0_01756(self):
-        paths = (os.getcwd() + '\data')
-        dict_df = load_csvs(paths)
-        param_file = '\osemosys_shell_param.txt'
-        path = os.getcwd()
-        outPutFile = make_outputfile(path, param_file)
-        outPutFile = SpecifiedDemandProfile(outPutFile, dict_df['demand'], dict_df['demandprofile'], dict_df['input_data'])
-        test = "region\tEL3\t10E\t2025\t0.01756\n"
-        assert test in outPutFile
+    # def test_specifieddemandprofile_EL3_10E_is_0_01756(self):
+    #     paths = (os.getcwd() + '\data')
+    #     dict_df = load_csvs(paths)
+    #     param_file = '\osemosys_shell_param.txt'
+    #     path = os.getcwd()
+    #     outPutFile = make_outputfile(path, param_file)
+    #     outPutFile = SpecifiedDemandProfile(outPutFile, dict_df['demand'], dict_df['demandprofile'], dict_df['input_data'])
+    #     test = "region\tEL3\t10E\t2025\t0.01756\n"
+    #     assert test in outPutFile
 
     # def test_capacityfactor_solar_battery_SOPV_8h_3_should_be(self):
     #     paths = (os.getcwd() + '\data')
