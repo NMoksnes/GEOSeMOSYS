@@ -1,0 +1,5 @@
+__pycache__
+.vscode
+results/*
+__pycache__/build_data_file.cpython-37.pyc
+data
