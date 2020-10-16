@@ -7,7 +7,7 @@ from build_data_file import *
 
 class ImportTestCase(unittest.TestCase):
     def test_files_load_csvs_count_nr_loaded_csv_should_be_2(self):
-        paths = os.path.join(os.getcwd(), 'tests',' data')
+        paths = os.path.join(os.getcwd(), 'tests','data')
         files = load_csvs(paths)
         assert len(files) == 19
 
@@ -26,7 +26,7 @@ class ImportTestCase(unittest.TestCase):
         assert text == "hej\nhej"
 
     def test_TRLV_3_operational_life_should_be_60(self):
-        paths = os.path.join(os.getcwd(), 'tests',' data')
+        paths = os.path.join(os.getcwd(), 'tests','data')
         dict_df = load_csvs(paths)
         path = os.path.join(os.getcwd(), 'tests','osemosys_shell_param.txt')
         outPutFile = make_outputfile(path)
@@ -35,7 +35,7 @@ class ImportTestCase(unittest.TestCase):
         assert test in outPutFile
 
     def test_MG_5_fixed_cost_should_be_1_in_2027(self):
-        paths = os.path.join(os.getcwd(), 'tests',' data')
+        paths = os.path.join(os.getcwd(), 'tests','data')
         dict_df = load_csvs(paths)
         path = os.path.join(os.getcwd(), 'tests','osemosys_shell_param.txt')
         outPutFile = make_outputfile(path)
@@ -44,7 +44,7 @@ class ImportTestCase(unittest.TestCase):
         assert test in outPutFile
 
     def test_SO_3_emissions_should_be_5_CO2_modeoperation_2_in_2027(self):
-        paths = os.path.join(os.getcwd(), 'tests',' data')
+        paths = os.path.join(os.getcwd(), 'tests','data')
         dict_df = load_csvs(paths)
         path = os.path.join(os.getcwd(), 'tests','osemosys_shell_param.txt')
         outPutFile = make_outputfile(path)
@@ -53,7 +53,7 @@ class ImportTestCase(unittest.TestCase):
         assert test in outPutFile
 
     def test_total_annual_limit_SO_5_should_be_3000(self):
-        paths = os.path.join(os.getcwd(), 'tests',' data')
+        paths = os.path.join(os.getcwd(), 'tests','data')
         dict_df = load_csvs(paths)
         path = os.path.join(os.getcwd(), 'tests','osemosys_shell_param.txt')
         outPutFile = make_outputfile(path)
@@ -62,7 +62,7 @@ class ImportTestCase(unittest.TestCase):
         assert test in outPutFile
 
     def test_specifiedannualdemand_EL3_3_7_2025(self):
-        paths = os.path.join(os.getcwd(),'tests',' data')
+        paths = os.path.join(os.getcwd(),'tests','data')
         dict_df = load_csvs(paths)
         path = os.path.join(os.getcwd(), 'tests','osemosys_shell_param.txt')
         outPutFile = make_outputfile(path)
@@ -71,7 +71,7 @@ class ImportTestCase(unittest.TestCase):
         assert test in outPutFile
 
     def test_capital_cost_dynamic_WI_5_Capital_cost_should_be_1824_748531_2025(self):
-        paths = os.path.join(os.getcwd(), 'tests',' data')
+        paths = os.path.join(os.getcwd(), 'tests','data')
         dict_df = load_csvs(paths)
         path = os.path.join(os.getcwd(), 'tests','osemosys_shell_param.txt')
         outPutFile = make_outputfile(path)
@@ -81,7 +81,7 @@ class ImportTestCase(unittest.TestCase):
         assert test in outPutFile
 
     def test_capital_cost_dynamic_SOMG_3_Captial_cost_should_be_1390(self):
-        paths = os.path.join(os.getcwd(), 'tests',' data')
+        paths = os.path.join(os.getcwd(), 'tests','data')
         dict_df = load_csvs(paths)
         path = os.path.join(os.getcwd(), 'tests','osemosys_shell_param.txt')
         outPutFile = make_outputfile(path)
@@ -91,7 +91,7 @@ class ImportTestCase(unittest.TestCase):
         assert test in outPutFile
 
     def test_capital_cost_dynamic_SOPV_1_Captial_cost_should_be_(self):
-        paths = os.path.join(os.getcwd(), 'tests',' data')
+        paths = os.path.join(os.getcwd(), 'tests','data')
         dict_df = load_csvs(paths)
         path = os.path.join(os.getcwd(), 'tests','osemosys_shell_param.txt')
         outPutFile = make_outputfile(path)
@@ -101,7 +101,7 @@ class ImportTestCase(unittest.TestCase):
         assert test in outPutFile
 
     def test_capital_cost_dynamic_SOPV8h_3_Captial_cost_should_be_3338(self):
-        paths = os.path.join(os.getcwd(), 'tests',' data')
+        paths = os.path.join(os.getcwd(), 'tests','data')
         dict_df = load_csvs(paths)
         path = os.path.join(os.getcwd(), 'tests','osemosys_shell_param.txt')
         outPutFile = make_outputfile(path)
@@ -111,7 +111,7 @@ class ImportTestCase(unittest.TestCase):
         assert test in outPutFile
 
     def test_capital_cost_dynamic_SOMG13h_2_Captial_cost_should_be_3062_2040(self):
-        paths = os.path.join(os.getcwd(), 'tests',' data')
+        paths = os.path.join(os.getcwd(), 'tests','data')
         dict_df = load_csvs(paths)
         path = os.path.join(os.getcwd(), 'tests','osemosys_shell_param.txt')
         outPutFile = make_outputfile(path)
@@ -121,7 +121,7 @@ class ImportTestCase(unittest.TestCase):
         assert test in outPutFile
 
     def test_capital_cost_TRHV_5_should_be_(self):
-        paths = os.path.join(os.getcwd(), 'tests',' data')
+        paths = os.path.join(os.getcwd(), 'tests','data')
         dict_df = load_csvs(paths)
         path = os.path.join(os.getcwd(), 'tests','osemosys_shell_param.txt')
         outPutFile = make_outputfile(path)
@@ -130,7 +130,7 @@ class ImportTestCase(unittest.TestCase):
         assert test in outPutFile
 
     def test_capacitytoactivity_WI_5_is_31_536(self):
-        paths = os.path.join(os.getcwd(), 'tests',' data')
+        paths = os.path.join(os.getcwd(), 'tests','data')
         dict_df = load_csvs(paths)
         path = os.path.join(os.getcwd(), 'tests','osemosys_shell_param.txt')
         outPutFile = make_outputfile(path)
@@ -139,7 +139,7 @@ class ImportTestCase(unittest.TestCase):
         assert test in outPutFile
 
     def test_inputact_TRLV_3_EL2_3_should_be_1_2025(self):
-        paths = os.path.join(os.getcwd(), 'tests',' data')
+        paths = os.path.join(os.getcwd(), 'tests','data')
         dict_df = load_csvs(paths)
         path = os.path.join(os.getcwd(), 'tests','osemosys_shell_param.txt')
         outPutFile = make_outputfile(path)
@@ -148,7 +148,7 @@ class ImportTestCase(unittest.TestCase):
         assert test in outPutFile
 
     def test_outputact_SOMG_5_EL2_5_should_be_1_modeop_1_2025(self):
-        paths = os.path.join(os.getcwd(), 'tests',' data')
+        paths = os.path.join(os.getcwd(), 'tests','data')
         dict_df = load_csvs(paths)
         path = os.path.join(os.getcwd(), 'tests','osemosys_shell_param.txt')
         outPutFile = make_outputfile(path)
@@ -157,7 +157,7 @@ class ImportTestCase(unittest.TestCase):
         assert test in outPutFile
 
     def test_specifiedannualdemand_EL3_4_is_2_41(self):
-        paths = os.path.join(os.getcwd(), 'tests',' data')
+        paths = os.path.join(os.getcwd(), 'tests','data')
         dict_df = load_csvs(paths)
         path = os.path.join(os.getcwd(), 'tests','osemosys_shell_param.txt')
         outPutFile = make_outputfile(path)
@@ -166,7 +166,7 @@ class ImportTestCase(unittest.TestCase):
         assert test in outPutFile
 
     def test_variable_cost_WI_5_scould_be_5(self):
-        paths = os.path.join(os.getcwd(), 'tests',' data')
+        paths = os.path.join(os.getcwd(), 'tests','data')
         dict_df = load_csvs(paths)
         path = os.path.join(os.getcwd(), 'tests','osemosys_shell_param.txt')
         outPutFile = make_outputfile(path)
@@ -175,18 +175,18 @@ class ImportTestCase(unittest.TestCase):
         assert test in outPutFile
 
     # def test_specifieddemandprofile_EL3_10E_is_0_01756(self):
-    #     paths = os.path.join(os.getcwd(), 'data')
+    #     paths = os.path.join(os.getcwd(), 'tests','data')
     #     dict_df = load_csvs(paths)
-    #     path = os.path.join(os.getcwd(), 'osemosys_shell_param.txt')
+    #     path = os.path.join(os.getcwd(), 'tests','osemosys_shell_param.txt')
     #     outPutFile = make_outputfile(path)
     #     outPutFile = SpecifiedDemandProfile(outPutFile, dict_df['demandprofile'], dict_df['input_data'])
     #     test = "region\tEL3\t10E\t2025\t0.01756\n"
     #     assert test in outPutFile
 
     # def test_capacityfactor_solar_battery_SOPV_8h_3_should_be(self):
-    #     paths = os.path.join(os.getcwd(), 'data')
+    #     paths = os.path.join(os.getcwd(), 'tests','data')
     #     dict_df = load_csvs(paths)
-    #     path = os.path.join(os.getcwd(), 'osemosys_shell_param.txt')
+    #     path = os.path.join(os.getcwd(), 'tests','osemosys_shell_param.txt')
     #     outPutFile = make_outputfile(path)
     #     outPutFile = capacityfactor_solar_battery(elec, outPutFile, dict_df['GIS_data'],
     #                                            dict_df['capacityfactor_solar'], dict_df['input_data'],
