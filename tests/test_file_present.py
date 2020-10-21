@@ -231,6 +231,7 @@ class ImportTestCase(unittest.TestCase):
         outPutFile = capacityfactor(outPutFile, dict_df['GIS_data'],
                                                dict_df['battery'], dict_df['input_data'], dict_df['capacityfactor_wind'], dict_df['capacityfactor_solar'])
         test = "region\tWI_13h_5\t1N\t2020\t0.061989\n"
+        assert test in outPutFile
 
 if __name__ == '__main__':
     unittest.main()
